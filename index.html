@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Studio Schoon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: één scrollende pagina, tegelwerk-raster als motief; sticky pil-navigatie; secties op een 12-koloms veld dat naar 1 kolom valt */
+:root {
+  --tile: #eaf2f1;      /* badkamertegel, koel wit */
+  --surface: #ffffff;
+  --ink: #102c2b;       /* diep petrol */
+  --muted: #4f6e6b;
+  --grout: #cfe0dd;     /* voeg */
+  --sponge: #f5c431;    /* sponsgeel: de ene accentkleur */
+  --sponge-ink: #241a00;
+  --scour: #2b7a57;     /* schuurspons-groen: afgevinkt */
+  --warn: #b8361f;
+  --warn-bg: #fde9e4;
+  --c-blue: #3b74c4; --c-green: #2f8f5b; --c-yellow: #d9a514; --c-red: #cf3b3b; --c-grey: #8a9a99;
+
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --r: 14px;
+  --gap: clamp(16px, 3vw, 28px);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --tile: #0c1919; --surface: #132423; --ink: #e2efed; --muted: #8ea8a5; --grout: #223938;
+    --sponge: #f2c33d; --sponge-ink: #241a00; --scour: #5cc08f; --warn: #ff8268; --warn-bg: #3a1a14;
+    --c-blue: #6b9be0; --c-green: #5cc08f; --c-yellow: #eec23f; --c-red: #ef6b6b; --c-grey: #9db0ae;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --tile: #0c1919; --surface: #132423; --ink: #e2efed; --muted: #8ea8a5; --grout: #223938;
+  --sponge: #f2c33d; --sponge-ink: #241a00; --scour: #5cc08f; --warn: #ff8268; --warn-bg: #3a1a14;
+  --c-blue: #6b9be0; --c-green: #5cc08f; --c-yellow: #eec23f; --c-red: #ef6b6b; --c-grey: #9db0ae;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }
+body {
+  margin: 0; background: var(--tile); color: var(--ink);
+  font: 16px/1.6 var(--f-body);
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
+@media (min-width: 720px) { .wrap { padding-inline: 32px; } }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; line-height: 1.05; letter-spacing: -0.02em; }
+h2 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; }
+h3 { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; }
+p { margin: 0; }
+.mono { font-family: var(--f-mono); font-size: .82rem; }
+.eyebrow { font-family: var(--f-mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.lede { color: var(--muted); max-width: 60ch; font-size: 1.05rem; }
+:focus-visible { outline: 3px solid var(--sponge); outline-offset: 2px; border-radius: 6px; }
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative; overflow: hidden;
+  background:
+    linear-gradient(var(--grout) 2px, transparent 2px) 0 0 / 56px 56px,
+    linear-gradient(90deg, var(--grout) 2px, transparent 2px) 0 0 / 56px 56px,
+    var(--tile);
+  border-bottom: 2px solid var(--grout);
+}
+.hero .wrap { padding-block: clamp(40px, 8vw, 88px) clamp(32px, 6vw, 64px); display: grid; gap: 32px; }
+@media (min-width: 900px) { .hero .wrap { grid-template-columns: 1.35fr 1fr; align-items: end; } }
+.hero h1 { font-size: clamp(3rem, 10vw, 6.4rem); font-weight: 800; letter-spacing: -0.045em; line-height: .92; }
+.hero h1 .hl { background: var(--sponge); color: var(--sponge-ink); padding: 0 .12em; border-radius: .12em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.hero .intro { display: grid; gap: 20px; }
+.hero .lede { font-size: 1.15rem; color: var(--ink); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; }
+.fact { background: var(--surface); border: 2px solid var(--grout); border-radius: 999px; padding: 4px 12px; font-family: var(--f-mono); font-size: .8rem; }
+.fact.mine { background: var(--ink); border-color: var(--ink); color: var(--tile); }
+
+.today {
+  background: var(--surface); border: 2px solid var(--ink); border-radius: var(--r);
+  padding: 20px; display: grid; gap: 14px; box-shadow: 6px 6px 0 var(--ink);
+}
+.today-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.today-head strong { font-family: var(--f-display); font-size: 1.3rem; }
+.meter { height: 10px; background: var(--grout); border-radius: 99px; overflow: hidden; }
+.meter > i { display: block; height: 100%; width: 0; background: var(--scour); border-radius: 99px; transition: width .4s cubic-bezier(.2,.8,.2,1); }
+
+/* ---------- Nav ---------- */
+.nav {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10;
+  background: color-mix(in srgb, var(--tile) 88%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 2px solid var(--grout);
+}
+.nav .wrap { display: flex; gap: 6px; overflow-x: auto; padding-block: 10px; scrollbar-width: none; }
+.nav .wrap::-webkit-scrollbar { display: none; }
+.nav a {
+  flex: none; text-decoration: none; color: var(--ink); font-weight: 600; font-size: .92rem;
+  padding: 7px 14px; border-radius: 999px; border: 2px solid transparent;
+}
+.nav a:hover { border-color: var(--grout); }
+.nav a.on { background: var(--ink); color: var(--tile); }
+
+/* ---------- Secties ---------- */
+section.block { padding-block: clamp(48px, 8vw, 96px); border-bottom: 2px solid var(--grout); }
+.sec-head { display: grid; gap: 12px; margin-bottom: clamp(24px, 4vw, 40px); }
+
+/* Gouden regels */
+.rules { display: grid; gap: 2px; background: var(--grout); border: 2px solid var(--grout); border-radius: var(--r); overflow: hidden; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.rule { background: var(--surface); padding: 22px; display: grid; gap: 8px; align-content: start; }
+.rule .glyph { width: 40px; height: 40px; border-radius: 10px; background: var(--tile); display: grid; place-items: center; color: var(--ink); }
+.rule .glyph svg { width: 22px; height: 22px; }
+.rule p { color: var(--muted); }
+
+/* Segmented control */
+.seg { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--surface); border: 2px solid var(--grout); border-radius: 999px; }
+.seg button {
+  font: 600 .92rem var(--f-body); color: var(--ink); background: none; border: 0; cursor: pointer;
+  padding: 8px 16px; border-radius: 999px;
+}
+.seg button[aria-selected="true"] { background: var(--sponge); color: var(--sponge-ink); }
+
+/* Checklist */
+.plan { display: grid; gap: var(--gap); }
+@media (min-width: 900px) { .plan { grid-template-columns: 300px 1fr; align-items: start; } }
+.plan-side { display: grid; gap: 16px; }
+.plan-side .big { font-family: var(--f-display); font-size: 4.5rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -0.04em; }
+.plan-side .big small { font-size: 1.4rem; color: var(--muted); font-weight: 600; letter-spacing: 0; }
+.plan-side p { color: var(--muted); }
+.reset { justify-self: start; font: 600 .85rem var(--f-body); background: none; border: 2px solid var(--grout); color: var(--ink); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.reset:hover { border-color: var(--ink); }
+
+.checks { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 2px solid var(--grout); border-radius: var(--r); overflow: hidden; }
+.checks li + li { border-top: 2px solid var(--grout); }
+.check { display: grid; grid-template-columns: 28px 1fr auto; gap: 14px; align-items: start; padding: 14px 18px; cursor: pointer; }
+.check:hover { background: color-mix(in srgb, var(--tile) 60%, var(--surface)); }
+.check input { position: absolute; opacity: 0; pointer-events: none; }
+.box { width: 26px; height: 26px; border: 2px solid var(--ink); border-radius: 8px; display: grid; place-items: center; transition: background .15s; margin-top: 1px; }
+.box svg { width: 16px; height: 16px; stroke: var(--surface); opacity: 0; transform: scale(.4); transition: .2s cubic-bezier(.3,1.6,.5,1); }
+.check input:checked + .box { background: var(--scour); border-color: var(--scour); }
+.check input:checked + .box svg { opacity: 1; transform: none; }
+.check input:focus-visible + .box { outline: 3px solid var(--sponge); outline-offset: 2px; }
+.check .txt { min-width: 0; }
+.check .txt b { font-weight: 600; display: block; }
+.check .txt span { color: var(--muted); font-size: .9rem; }
+.check input:checked ~ .txt b { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--scour); color: var(--muted); }
+.check .min { font-family: var(--f-mono); font-size: .78rem; color: var(--muted); white-space: nowrap; padding-top: 3px; }
+
+/* Ruimtes */
+.room { display: grid; gap: var(--gap); margin-top: 24px; }
+@media (min-width: 900px) { .room { grid-template-columns: 1fr 320px; align-items: start; } }
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; display: grid; gap: 2px; background: var(--grout); border: 2px solid var(--grout); border-radius: var(--r); overflow: hidden; }
+.steps li { counter-increment: s; background: var(--surface); padding: 18px 18px 18px 72px; position: relative; display: grid; gap: 6px; }
+.steps li::before {
+  content: counter(s, decimal-leading-zero); position: absolute; left: 18px; top: 16px;
+  font: 800 1.5rem/1 var(--f-display); color: var(--ink); letter-spacing: -0.03em;
+}
+.steps li b { font-weight: 600; }
+.steps li p { color: var(--muted); font-size: .95rem; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.tag { font-family: var(--f-mono); font-size: .74rem; padding: 2px 8px; border-radius: 6px; background: var(--tile); color: var(--ink); display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.aside-card { background: var(--surface); border: 2px solid var(--grout); border-radius: var(--r); padding: 20px; display: grid; gap: 12px; }
+.aside-card ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--muted); }
+.aside-card .mono { color: var(--muted); }
+
+/* Afwas */
+.flow { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; background: var(--surface); border: 2px solid var(--ink); border-radius: var(--r); overflow: hidden; box-shadow: 6px 6px 0 var(--ink); }
+.flow > div { padding: 18px 12px; display: grid; gap: 8px; justify-items: center; text-align: center; position: relative; }
+.flow > div + div { border-left: 2px dashed var(--grout); }
+.flow svg { width: 40px; height: 40px; color: var(--ink); }
+.flow b { font-family: var(--f-display); font-size: 1rem; }
+.flow span { font-size: .8rem; color: var(--muted); }
+.flow-scale { display: flex; justify-content: space-between; margin-top: 10px; font-family: var(--f-mono); font-size: .75rem; color: var(--muted); }
+.flow-scale i { flex: 1; height: 2px; margin: 9px 12px 0; background: linear-gradient(90deg, var(--grout), var(--ink)); }
+@media (max-width: 640px) {
+  .flow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .flow > div:nth-child(4) { border-left: 0; }
+  .flow > div:nth-child(n+4) { border-top: 2px dashed var(--grout); }
+}
+.dish-grid { display: grid; gap: var(--gap); margin-top: clamp(28px, 5vw, 48px); }
+@media (min-width: 900px) { .dish-grid { grid-template-columns: 1.2fr 1fr; } }
+.care { display: grid; gap: 2px; background: var(--grout); border: 2px solid var(--grout); border-radius: var(--r); overflow: hidden; }
+.care > div { background: var(--surface); padding: 14px 18px; display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; align-items: baseline; }
+.care b { font-weight: 600; }
+.care .mono { color: var(--ink); background: var(--tile); padding: 2px 8px; border-radius: 6px; }
+.care p { grid-column: 1 / -1; color: var(--muted); font-size: .9rem; }
+.dont { background: var(--surface); border: 2px solid var(--grout); border-radius: var(--r); padding: 20px; display: grid; gap: 10px; }
+.dont ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.dont li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; color: var(--muted); }
+.dont li b { color: var(--ink); font-weight: 600; }
+.x { width: 22px; height: 22px; border-radius: 6px; background: var(--warn-bg); color: var(--warn); display: grid; place-items: center; font-weight: 800; font-size: .8rem; margin-top: 2px; }
+
+/* Middelen */
+.danger {
+  border: 2px solid var(--warn); background: var(--warn-bg); border-radius: var(--r);
+  padding: 20px 22px; display: grid; gap: 10px; margin-bottom: var(--gap);
+}
+.danger h3 { color: var(--warn); }
+.danger ul { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.products { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.prod { background: var(--surface); border: 2px solid var(--grout); border-radius: var(--r); padding: 20px; display: grid; gap: 12px; align-content: start; }
+.prod-head { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+.ph { font-family: var(--f-mono); font-size: .72rem; padding: 3px 8px; border-radius: 6px; white-space: nowrap; border: 1.5px solid currentColor; }
+.ph.zuur { color: var(--c-blue); } .ph.basisch { color: var(--c-green); } .ph.neutraal { color: var(--muted); } .ph.chloor { color: var(--warn); }
+.prod dl { margin: 0; display: grid; gap: 8px; }
+.prod dt { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.prod dd { margin: 0; font-size: .95rem; }
+.prod .dose { background: var(--tile); border-radius: 8px; padding: 8px 10px; font-family: var(--f-mono); font-size: .8rem; }
+
+/* Probleemzoeker */
+.search { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 2px solid var(--ink); border-radius: 999px; padding: 6px 8px 6px 20px; max-width: 560px; }
+.search svg { width: 20px; height: 20px; flex: none; color: var(--muted); }
+.search input { flex: 1; min-width: 0; border: 0; background: none; font: 500 1.05rem var(--f-body); color: var(--ink); padding: 10px 0; outline: none; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.chip { font: 500 .85rem var(--f-body); background: var(--surface); border: 2px solid var(--grout); color: var(--ink); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+.chip:hover { border-color: var(--ink); }
+.fixes { display: grid; gap: 16px; margin-top: 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+.fix { background: var(--surface); border: 2px solid var(--grout); border-radius: var(--r); padding: 20px; display: grid; gap: 10px; align-content: start; }
+.fix ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; color: var(--muted); }
+.fix .need { display: flex; flex-wrap: wrap; gap: 6px; }
+.empty { color: var(--muted); padding: 24px 0; }
+
+/* Spullen */
+.colors { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); margin-bottom: var(--gap); }
+.cloth { background: var(--surface); border: 2px solid var(--grout); border-radius: var(--r); padding: 16px; display: grid; grid-template-columns: 40px 1fr; gap: 12px; align-items: center; }
+.cloth .sw { width: 40px; height: 40px; border-radius: 10px; position: relative; overflow: hidden; }
+.cloth .sw::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, rgba(255,255,255,.18) 0 3px, transparent 3px 7px); }
+.cloth b { display: block; font-weight: 600; }
+.cloth span { font-size: .85rem; color: var(--muted); }
+.kit { display: grid; gap: var(--gap); }
+@media (min-width: 900px) { .kit { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; } }
+.kit h3 { margin-bottom: 12px; }
+
+
+/* Jouw kast */
+.pick { background: var(--surface); border: 2px solid var(--ink); border-radius: var(--r); box-shadow: 6px 6px 0 var(--ink); overflow: hidden; margin-bottom: var(--gap); }
+.pick-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 4px 20px; padding: 11px 18px; align-items: baseline; }
+.pick-row + .pick-row { border-top: 2px solid var(--grout); }
+.pick-row span { color: var(--muted); }
+.pick-row b { font-weight: 600; }
+.pick-row.head { background: var(--ink); color: var(--tile); font-family: var(--f-mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; }
+.pick-row.head span { color: inherit; }
+@media (max-width: 560px) { .pick-row { grid-template-columns: 1fr; } .pick-row.head { display: none; } }
+.note { border: 2px solid var(--sponge); background: color-mix(in srgb, var(--sponge) 14%, var(--surface)); border-radius: var(--r); padding: 18px 20px; display: grid; gap: 6px; margin-bottom: var(--gap); }
+.shelf { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+.item { background: var(--surface); border: 2px solid var(--grout); border-radius: var(--r); padding: 18px; display: grid; gap: 10px; align-content: start; transition: border-color .2s, opacity .2s; }
+.item[data-stock="bijna"] { border-color: var(--sponge); }
+.item[data-stock="op"] { border-style: dashed; }
+.item[data-stock="op"] h3, .item[data-stock="op"] dl { opacity: .55; }
+.item .kind { font-family: var(--f-mono); font-size: .75rem; color: var(--muted); }
+.item dl { margin: 0; display: grid; gap: 8px; }
+.item dt { font-family: var(--f-mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.item dd { margin: 0; font-size: .93rem; }
+.item .warnline { color: var(--warn); font-weight: 600; font-size: .9rem; }
+.stock { display: flex; gap: 4px; padding: 3px; background: var(--tile); border-radius: 999px; justify-self: start; }
+.stock button { font: 600 .8rem var(--f-body); border: 0; background: none; color: var(--muted); padding: 5px 12px; border-radius: 999px; cursor: pointer; }
+.stock button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 2px var(--ink) inset; }
+.stock button[data-v="bijna"][aria-pressed="true"] { background: var(--sponge); color: var(--sponge-ink); box-shadow: none; }
+.stock button[data-v="op"][aria-pressed="true"] { background: var(--warn); color: var(--surface); box-shadow: none; }
+.shop { display: grid; gap: var(--gap); margin-top: clamp(28px, 5vw, 48px); }
+@media (min-width: 900px) { .shop { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } }
+.shop h3 { margin-bottom: 12px; }
+.mine-line { font-size: .88rem; color: var(--muted); border-top: 2px dashed var(--grout); padding-top: 10px; }
+.mine-line b { color: var(--ink); font-weight: 600; }
+.tag b { font-weight: 500; color: var(--muted); }
+
+footer { padding-block: 40px 56px; color: var(--muted); font-size: .9rem; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+</style>
+</head>
+<body>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="intro">
+      <span class="eyebrow">Schoonmaakhandboek · afgestemd op jouw studio</span>
+      <h1>Studio <span class="hl">Schoon</span></h1>
+      <p class="lede">Alles op één plek: welk middel waarvoor, in welke volgorde je werkt, wat je in huis moet hebben en hoe je de afwas met de hand goed doet. Vink af wat klaar is; je voortgang blijft op dit apparaat bewaard.</p>
+      <div class="facts">
+        <span class="fact">± 10 min per dag</span>
+        <span class="fact">± 60 min per week</span>
+        <span class="fact">± 45 min extra per maand</span>
+      </div>
+      <div class="facts" aria-label="Jouw studio">
+        <span class="fact mine">inductiekookplaat</span>
+        <span class="fact mine">douche met gordijn</span>
+        <span class="fact mine">wc in de badkamer</span>
+        <span class="fact mine">geen vaatwasser</span>
+      </div>
+    </div>
+    <aside class="today" aria-label="Vandaag">
+      <div class="today-head"><strong>Vandaag</strong><span class="mono" id="todayDate"></span></div>
+      <div class="meter" aria-hidden="true"><i id="todayMeter"></i></div>
+      <p id="todayText" class="mono">0 van 6 dagelijkse taken klaar</p>
+      <p id="todayNext" style="color:var(--muted)"></p>
+    </aside>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Secties">
+  <div class="wrap" id="navlinks">
+    <a href="#aanpak">Aanpak</a>
+    <a href="#ritme">Ritme</a>
+    <a href="#ruimtes">Per ruimte</a>
+    <a href="#afwas">Afwas</a>
+    <a href="#middelen">Middelen</a>
+    <a href="#kast">Jouw kast</a>
+    <a href="#vlekken">Probleem oplossen</a>
+    <a href="#spullen">Benodigdheden</a>
+  </div>
+</nav>
+
+<main>
+  <section class="block" id="aanpak">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">De aanpak</span>
+        <h2>Zes regels die altijd gelden</h2>
+        <p class="lede">Of je nu tien minuten hebt of een hele zaterdag: met deze volgorde doe je niets dubbel en verplaats je geen vuil naar plekken die al schoon waren.</p>
+      </div>
+      <div class="rules" id="rules"></div>
+    </div>
+  </section>
+
+  <section class="block" id="ritme">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Het ritme</span>
+        <h2>Wat, hoe vaak</h2>
+        <p class="lede">Elke lijst zet zichzelf terug aan het begin van een nieuwe dag, week, maand of seizoen.</p>
+      </div>
+      <div class="seg" role="tablist" id="freqTabs" aria-label="Frequentie"></div>
+      <div class="plan" style="margin-top:24px">
+        <div class="plan-side">
+          <div class="big" id="planCount">0<small>/0</small></div>
+          <div class="meter" aria-hidden="true"><i id="planMeter"></i></div>
+          <p id="planNote"></p>
+          <button class="reset" id="planReset" type="button">Lijst leegmaken</button>
+        </div>
+        <ul class="checks" id="planList"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="ruimtes">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Per ruimte</span>
+        <h2>Stap voor stap</h2>
+        <p class="lede">De grote wekelijkse beurt, opgeknipt per zone. In een studio werk je in deze volgorde: leef- en slaapgedeelte, badkamer, keuken, en als laatste de vloeren.</p>
+      </div>
+      <div class="seg" role="tablist" id="roomTabs" aria-label="Ruimte"></div>
+      <div class="room" id="roomBody"></div>
+    </div>
+  </section>
+
+  <section class="block" id="afwas">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Zonder vaatwasser</span>
+        <h2>Afwassen met de hand</h2>
+        <p class="lede">Eén teil, heet water en de juiste volgorde: van schoon naar vies. Dan blijft je sop het langst bruikbaar en komen er geen vetstrepen op je glazen.</p>
+      </div>
+      <div class="flow" id="flow"></div>
+      <div class="flow-scale"><span>minst vet</span><i></i><span>meest vet</span></div>
+
+      <div class="dish-grid">
+        <div>
+          <h3 style="margin-bottom:12px">Zo doe je het</h3>
+          <ol class="steps" id="dishSteps"></ol>
+        </div>
+        <div style="display:grid;gap:var(--gap);align-content:start">
+          <div>
+            <h3 style="margin-bottom:12px">Onderhoud van je afwasspullen</h3>
+            <div class="care" id="care"></div>
+          </div>
+          <div class="dont">
+            <h3>Liever niet</h3>
+            <ul id="dishDont"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="middelen">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Schoonmaakmiddelen</span>
+        <h2>Welk middel waarvoor</h2>
+        <p class="lede">Je hebt geen kast vol flessen nodig. Zuur pakt kalk aan, basisch pakt vet aan, neutraal is voor alles daartussen. Met deze middelen red je het in een studio.</p>
+      </div>
+      <div class="danger" role="note">
+        <h3>Nooit mengen</h3>
+        <ul>
+          <li><b>Chloor + azijn of ander zuur</b> (ontkalker, wc-gel met zuur): hierbij komt giftig chloorgas vrij.</li>
+          <li><b>Chloor + ammoniak</b> (sommige glasreinigers): ook giftige dampen.</li>
+          <li>Gebruik chloor en zure middelen nooit vlak na elkaar in dezelfde wc of afvoer. Spoel eerst goed door en ventileer.</li>
+          <li>In jouw kast zijn Dubro, Antikal, schoonmaakazijn en natuurazijn zuur. Controleer of je wc-gel chloor bevat.</li>
+        </ul>
+        <p>Zet altijd een raam open, draag handschoenen en test een nieuw middel eerst op een onopvallende plek.</p>
+      </div>
+      <div class="products" id="products"></div>
+    </div>
+  </section>
+
+  <section class="block" id="kast">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Jouw kast</span>
+        <h2>Wat je al in huis hebt</h2>
+        <p class="lede">Op basis van je foto's. Je hebt meer dan genoeg; je hoeft vooral te weten welke fles waarvoor is. Zet een product op <b>Bijna op</b> of <b>Op</b>, dan komt het op je boodschappenlijst onderaan.</p>
+      </div>
+      <div class="pick" id="pick"></div>
+      <div class="note" role="note">
+        <h3>Check je wc-gel</h3>
+        <p>Kijk op de achterkant van de Super Finn wc-gel of er <b>chloor, bleek of natriumhypochloriet</b> in zit. Zo ja: gebruik hem nooit tegelijk met Dubro, Antikal of azijn in dezelfde wc. Eerst doortrekken, dan pas het andere middel.</p>
+      </div>
+      <div class="shelf" id="shelf"></div>
+      <div class="shop">
+        <div>
+          <h3>Bijvullen <span class="mono" id="refillCount" style="color:var(--muted);font-weight:400"></span></h3>
+          <ul class="checks" id="refill"></ul>
+        </div>
+        <div>
+          <h3>Nog niet in huis</h3>
+          <ul class="checks" id="missing"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="vlekken">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Probleem oplossen</span>
+        <h2>Wat doe ik met…</h2>
+        <p class="lede">Zoek op wat je ziet: kalk, schimmel, aangebrand, stank. Je krijgt het middel en de werkwijze.</p>
+      </div>
+      <label class="search" for="q">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="bijv. kalk, schimmel, pan, afvoer" autocomplete="off">
+      </label>
+      <div class="chips" id="chips"></div>
+      <div class="fixes" id="fixes"></div>
+    </div>
+  </section>
+
+  <section class="block" id="spullen">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Benodigdheden</span>
+        <h2>Je basisuitrusting</h2>
+        <p class="lede">Vink af wat je al hebt; wat overblijft is je boodschappenlijst. Je middelen staan bij Jouw kast. Begin met de doeken: één kleur per zone voorkomt dat de wc-doek ooit op je aanrecht belandt.</p>
+      </div>
+      <div class="colors" id="colors"></div>
+      <div class="kit" id="kit"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Studio Schoon · voortgang wordt alleen in deze browser bewaard</span>
+    <a href="#top" style="color:inherit">Terug naar boven</a>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  const $ = (s, el = document) => el.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  /* ---------- Opslag (veilig) ---------- */
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  /* ---------- Periodesleutels ---------- */
+  const now = new Date();
+  const pad = n => String(n).padStart(2, "0");
+  function isoWeek(d) {
+    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const day = t.getUTCDay() || 7;
+    t.setUTCDate(t.getUTCDate() + 4 - day);
+    const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+    return t.getUTCFullYear() + "-W" + pad(Math.ceil(((t - y0) / 864e5 + 1) / 7));
+  }
+  const periodKey = {
+    dag: "d-" + now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate()),
+    week: "w-" + isoWeek(now),
+    maand: "m-" + now.getFullYear() + "-" + pad(now.getMonth() + 1),
+    seizoen: "q-" + now.getFullYear() + "-Q" + (Math.floor(now.getMonth() / 3) + 1)
+  };
+
+  /* ---------- Iconen ---------- */
+  const I = {
+    down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v14M6 12l6 6 6-6"/></svg>',
+    dry: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16c3-1 5-6 8-6s5 5 8 6"/><path d="M7 8l1-3M12 6V3M17 8l-1-3"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>',
+    clean: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 19 5"/><path d="M5 5h5M14 19h5M19 14v5"/></svg>',
+    box: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 12h16"/></svg>',
+    air: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9h11a3 3 0 1 0-3-3M3 15h15a3 3 0 1 1-3 3"/></svg>',
+    tick: '<svg viewBox="0 0 24 24" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
+  };
+
+  /* ---------- Gouden regels ---------- */
+  const rules = [
+    [I.down, "Van boven naar beneden", "Stof en kruimels vallen naar beneden. Begin bij plafondlamp en kastbovenkant, eindig met de vloer."],
+    [I.dry, "Eerst droog, dan nat", "Eerst stoffen, stofzuigen en kruimels weg; daarna pas sop. Nat stof wordt modder."],
+    [I.clock, "Laat het middel werken", "Spuit eerst, doe iets anders en kom na 5–10 minuten terug. Dan hoef je bijna niet te schrobben."],
+    [I.clean, "Van schoon naar vies", "Spiegel en wastafel vóór de wc, aanrecht vóór gootsteen, glazen vóór pannen. Zo verspreid je geen bacteriën."],
+    [I.box, "Eerst opruimen", "Je kunt alleen schoonmaken wat vrij ligt. Vijf minuten spullen terugleggen scheelt een kwartier poetsen."],
+    [I.air, "Ventileer altijd", "In een studio komen koken, douchen en slapen samen. Raam open tijdens en na het schoonmaken tegen vocht en schimmel."]
+  ];
+  $("#rules").innerHTML = rules.map(r => `<div class="rule"><span class="glyph">${r[0]}</span><h3>${r[1]}</h3><p>${r[2]}</p></div>`).join("");
+
+  /* ---------- Ritme ---------- */
+  const freq = {
+    dag: { label: "Dagelijks", note: "Zet zichzelf elke ochtend terug.", items: [
+      ["afwas", "Afwas doen", "Direct na het eten, of uiterlijk één keer per dag.", 10],
+      ["aanrecht", "Aanrecht en inductieplaat afnemen", "Plaat afnemen zodra hij afgekoeld is: vochtige groene doek, droog nawrijven tegen strepen.", 3],
+      ["douche", "Douchegordijn uitgespreid laten drogen", "Na het douchen dichtgetrokken laten hangen, niet in plooien. Tegels en vloer even aftrekken.", 1],
+      ["bed", "Bed opmaken en luchten", "Dekbed eerst 10 minuten open laten liggen.", 2],
+      ["opruimen", "Spullen terug op hun plek", "Kleding, post, kopjes. Een studio voelt meteen groter.", 5],
+      ["ventileren", "Ventileren", "Minimaal 15 minuten raam open, zeker na koken en douchen.", 0]
+    ]},
+    week: { label: "Wekelijks", note: "Zet zichzelf elke maandag terug.", items: [
+      ["stof", "Stof afnemen, boven naar beneden", "Kastbovenkant, planken, vensterbank, tv. Droge blauwe microvezeldoek.", 10],
+      ["badkamer", "Badkamer schoon", "Spiegel, wastafel, douche en gordijnzoom, als laatste de wc.", 20],
+      ["wc-tussendoor", "WC tussendoor", "Halverwege de week: pot borstelen, bril en knop afnemen met de rode doek.", 3],
+      ["keuken", "Keuken grondig", "Fronten, spatwand, magnetron binnenkant, gootsteen.", 15],
+      ["beddengoed", "Beddengoed verschonen", "Wassen op 60 °C.", 10],
+      ["textiel", "Handdoeken en theedoeken wassen", "Theedoeken liever elke 2–3 dagen; 60 °C.", 5],
+      ["stofzuigen", "Stofzuigen", "Ook onder het bed en langs de plinten.", 10],
+      ["dweilen", "Dweilen", "Na het stofzuigen. Weinig water op laminaat en hout.", 10],
+      ["afval", "Afval, papier en glas wegbrengen", "Prullenbak even afnemen als hij plakt.", 5]
+    ]},
+    maand: { label: "Maandelijks", note: "Zet zichzelf elke 1e van de maand terug.", items: [
+      ["koelkast", "Koelkast uitmesten en afnemen", "Over datum weg, schappen afnemen met water en een scheut azijn.", 15],
+      ["waterkoker", "Waterkoker ontkalken", "Azijn of citroenzuur, zie Probleem oplossen.", 5],
+      ["afzuigkap", "Filter afzuigkap ontvetten", "Weken in heet water met soda.", 10],
+      ["afvoeren", "Afvoeren doorspoelen", "Haarzeefje legen, soda + kokend water.", 5],
+      ["gordijn", "Douchegordijn wassen", "In de wasmachine op 30–40 °C met twee handdoeken erbij (die schuren mee). Nat terughangen.", 5],
+      ["contact", "Contactpunten afnemen", "Deurklinken, lichtknoppen, afstandsbediening, telefoon.", 5],
+      ["ramen", "Ramen binnenkant", "Microvezel glasdoek of raamwisser.", 15],
+      ["oven", "Magnetron/oven grondig", "Stoom-truc voor de magnetron, zuiveringszout voor de oven.", 15],
+      ["matras", "Matras stofzuigen", "Met het meubelmondstuk, daarna een uur laten luchten.", 10]
+    ]},
+    seizoen: { label: "Per seizoen", note: "Elk kwartaal terug op nul.", items: [
+      ["achter", "Achter en onder meubels", "Bank en bed verschuiven, stofzuigen, dweilen.", 20],
+      ["kasten", "Keukenkastjes leeg en afnemen", "Meteen houdbaarheid checken.", 30],
+      ["gordijnen", "Gordijnen wassen of uitzuigen", "Kijk op het label.", 15],
+      ["kit", "Kitranden controleren", "Zwarte puntjes? Zie schimmel bij Probleem oplossen.", 5],
+      ["buiten", "Ramen buitenkant", "Als je er veilig bij kunt.", 20],
+      ["matraskeren", "Matras keren of draaien", "Hoofd- en voeteneind wisselen.", 5]
+    ]}
+  };
+  let checks = store.get("ss-checks", {});
+  const isDone = (f, id) => !!(checks[periodKey[f]] && checks[periodKey[f]][id]);
+  function setDone(f, id, v) {
+    const k = periodKey[f];
+    checks[k] = checks[k] || {};
+    if (v) checks[k][id] = 1; else delete checks[k][id];
+    // oude periodes opruimen
+    const keep = new Set(Object.values(periodKey));
+    for (const key of Object.keys(checks)) if (!keep.has(key)) delete checks[key];
+    store.set("ss-checks", checks);
+  }
+
+  function checkRow(group, id, title, sub, extra, checked) {
+    const domId = "c-" + group + "-" + id;
+    return `<li><label class="check" for="${domId}">
+      <input type="checkbox" id="${domId}" data-g="${group}" data-id="${id}" ${checked ? "checked" : ""}>
+      <span class="box">${I.tick}</span>
+      <span class="txt"><b>${esc(title)}</b>${sub ? `<span>${esc(sub)}</span>` : ""}</span>
+      <span class="min">${extra || ""}</span></label></li>`;
+  }
+
+  let curFreq = store.get("ss-freq", "dag");
+  if (!freq[curFreq]) curFreq = "dag";
+  function renderTabs(el, obj, cur, onPick) {
+    el.innerHTML = Object.entries(obj).map(([k, v]) =>
+      `<button role="tab" type="button" data-k="${k}" aria-selected="${k === cur}">${esc(v.label)}</button>`).join("");
+    el.onclick = e => { const b = e.target.closest("button"); if (b) onPick(b.dataset.k); };
+  }
+  function renderPlan() {
+    renderTabs($("#freqTabs"), freq, curFreq, k => { curFreq = k; store.set("ss-freq", k); renderPlan(); });
+    const f = freq[curFreq];
+    $("#planList").innerHTML = f.items.map(([id, t, s, m]) =>
+      checkRow(curFreq, id, t, s, m ? m + " min" : "", isDone(curFreq, id))).join("");
+    updatePlan();
+  }
+  function updatePlan() {
+    const f = freq[curFreq];
+    const done = f.items.filter(i => isDone(curFreq, i[0])).length;
+    const left = f.items.filter(i => !isDone(curFreq, i[0])).reduce((a, i) => a + i[3], 0);
+    $("#planCount").innerHTML = `${done}<small>/${f.items.length}</small>`;
+    $("#planMeter").style.width = (done / f.items.length * 100) + "%";
+    $("#planNote").textContent = done === f.items.length
+      ? "Alles gedaan. " + f.note
+      : `Nog ongeveer ${left} minuten werk. ${f.note}`;
+    updateToday();
+  }
+  $("#planList").addEventListener("change", e => {
+    const t = e.target; if (!t.dataset.g) return;
+    setDone(t.dataset.g, t.dataset.id, t.checked); updatePlan();
+  });
+  $("#planReset").addEventListener("click", () => {
+    freq[curFreq].items.forEach(i => setDone(curFreq, i[0], false)); renderPlan();
+  });
+
+  function updateToday() {
+    const items = freq.dag.items;
+    const done = items.filter(i => isDone("dag", i[0])).length;
+    $("#todayMeter").style.width = (done / items.length * 100) + "%";
+    $("#todayText").textContent = `${done} van ${items.length} dagelijkse taken klaar`;
+    const next = items.find(i => !isDone("dag", i[0]));
+    $("#todayNext").textContent = next ? "Volgende: " + next[1].toLowerCase() + "." : "Klaar voor vandaag. Mooi zo.";
+  }
+  $("#todayDate").textContent = now.toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" });
+
+  /* ---------- Doekkleuren ---------- */
+  const cloth = {
+    blauw: ["var(--c-blue)", "Blauw", "Algemeen: meubels, kasten, vensterbank"],
+    groen: ["var(--c-green)", "Groen", "Keuken: aanrecht, inductieplaat, fronten"],
+    geel: ["var(--c-yellow)", "Geel", "Badkamer: wastafel, douche, tegels (niet de wc)"],
+    rood: ["var(--c-red)", "Rood", "Alleen de wc, en apart bewaren"],
+    glas: ["var(--c-grey)", "Glasdoek", "Spiegels, ramen, kraan oppoetsen"]
+  };
+
+  /* ---------- Jouw producten ---------- */
+  const brand = {
+    "allesreiniger": "AH allesreiniger spray",
+    "badkamerreiniger": "Dubro",
+    "wc-reiniger": "Super Finn",
+    "ontvetter": "Dasty",
+    "azijn": "AH schoonmaakazijn",
+    "kookplaatreiniger": "of Dreft 3in1 spray",
+    "schuurmiddel": "AH schuurmiddel",
+    "dop op 5 liter": "Dettol blauw",
+    "sopje": "AH keukenreiniger"
+  };
+  const tag = (txt, color) => `<span class="tag">${color ? `<i class="dot" style="background:${cloth[color][0]}"></i>` : ""}${esc(txt)}${brand[txt] ? ` · <b>${esc(brand[txt])}</b>` : ""}</span>`;
+
+  /* ---------- Ruimtes ---------- */
+  const rooms = {
+    leef: { label: "Leven & slapen", time: "± 25 min", steps: [
+      ["Opruimen en luchten", "Raam open. Alles wat niet op zijn plek ligt terug, wasgoed in de mand, afval weg.", []],
+      ["Bed afhalen", "Beddengoed in de was, dan kan het matras luchten terwijl je verder werkt.", []],
+      ["Stof afnemen, van hoog naar laag", "Lamp, kastbovenkant, planken, tv-meubel, vensterbank. Droge doek; vouw hem in vieren zodat je acht schone kanten hebt.", [["droog", "blauw"]]],
+      ["Contactpunten", "Deurklink, lichtknoppen, afstandsbediening. Licht vochtige doek met een druppel allesreiniger.", [["allesreiniger", "blauw"]]],
+      ["Spiegels en glas", "Nat over de glasdoek, dan direct droog nawrijven. Niet in fel zonlicht, dan krijg je strepen.", [["water of glasreiniger", "glas"]]],
+      ["Bed opmaken", "Schoon beddengoed erop. De vloer volgt bij Vloeren.", []]
+    ], need: ["Blauwe microvezeldoek", "Glasdoek", "Plumeau voor hoge plekken (optioneel)"],
+       tip: "Leg een mand bij de deur voor alles wat ‘ergens anders’ hoort. Eén keer per dag leeg."
+    },
+    bad: { label: "Badkamer + wc", time: "± 25 min", steps: [
+      ["Raam open of afzuiging aan", "Spullen van de wastafelrand en uit de douchehoek weghalen. Handdoeken en badmat eruit.", []],
+      ["WC-deksel dicht, doortrekken", "Eerst één keer doortrekken met de deksel dicht. Zo spat er niets op wat je zo schoonmaakt.", []],
+      ["Inspuiten en laten werken", "Douchetegels, douchevloer en kraan inspuiten met badkamerreiniger of azijn. WC-gel onder de rand. Laat 10 minuten staan.", [["badkamerreiniger", ""], ["wc-reiniger", ""]]],
+      ["Spiegel", "Eerst de spiegel, zodat spetters van de rest er niet weer op komen.", [["glasdoek", "glas"]]],
+      ["Wastafel en kraan", "Afnemen, naspoelen, kraan droog oppoetsen. Glanzende kraan = schone badkamer.", [["gele doek", "geel"]]],
+      ["Douche", "Gordijn opzij. Tegels van boven naar beneden afnemen, afspoelen, aftrekken. Haarzeef leegmaken.", [["gele doek", "geel"]]],
+      ["Douchegordijn", "Onderste 30 cm controleren op roze of zwarte aanslag. Afnemen met sopje of azijn en uitgespreid laten drogen.", [["gele doek", "geel"]]],
+      ["Toilet, altijd als laatste", "Buitenkant: knop, deksel, bril (boven en onder), pot buitenkant, voet en de vloer rond de pot. Dan binnenkant met de borstel. Borstel tussen bril en pot laten uitdruipen.", [["rode doek", "rood"], ["wc-borstel", ""]]],
+      ["Doeken direct in de was", "Rode en gele doeken op 60 °C, niet samen met keukendoeken laten liggen.", []]
+    ], need: ["Badkamerreiniger of schoonmaakazijn", "WC-reiniger", "Gele en rode doek", "Trekker voor tegels en vloer", "Oude tandenborstel voor voegen"],
+       tip: "WC en wastafel delen één ruimte: trek altijd door met de deksel dicht en bewaar tandenborstels in een kastje of zo ver mogelijk van de wc."
+    },
+    keuken: { label: "Keuken", time: "± 20 min", steps: [
+      ["Afwas weg en aanrecht leeg", "Eerst de afwas (zie Afwas), dan alles van het aanrecht dat er niet hoort.", []],
+      ["Ontvetter op spatwand en afzuigkap", "Inspuiten en laten inwerken terwijl je de rest doet. Niet op de inductieplaat.", [["ontvetter", ""]]],
+      ["Fronten en grepen", "Van boven naar beneden, de bovenkastjes eerst. Vooral rond de grepen zit vet.", [["sopje", "groen"]]],
+      ["Magnetron", "Kom water met een scheut azijn 3 minuten verwarmen, 2 minuten dicht laten, uitvegen.", [["azijn", "groen"]]],
+      ["Spatwand afnemen", "Nu is het vet losgeweekt. Afnemen met de groene doek en naspoelen.", [["groene doek", "groen"]]],
+      ["Inductieplaat", "Koude plaat. Aangekoekt eerst weg met de glasschraper onder een lage hoek. Dan kookplaatreiniger, uitwrijven met keukenpapier en droog nawrijven met de glasdoek.", [["kookplaatreiniger", ""], ["glasdoek", "glas"]]],
+      ["Aanrecht", "Kruimels eerst wegvegen (droog voor nat), dan sopje, dan droog nawrijven.", [["allesreiniger", "groen"]]],
+      ["Gootsteen als laatste", "Afvoerzeefje leeg, gootsteen schuren met cream, kraan droog oppoetsen.", [["schuurmiddel", "groen"]]]
+    ], need: ["Ontvetter", "Allesreiniger of afwasmiddel", "Kookplaatreiniger", "Glasschraper", "Groene doeken", "Schuursponsje (niet voor de inductieplaat)"],
+       tip: "Inductie: til pannen op in plaats van te schuiven, dat voorkomt krassen. Suiker of gesmolten plastic direct wegschrapen, zolang het nog zacht is."
+    },
+    vloer: { label: "Vloeren", time: "± 20 min", steps: [
+      ["Alles van de vloer af", "Stoelen op tafel of opzij, kleden oprollen, losse spullen weg.", []],
+      ["Stofzuigen", "Van de verste hoek naar de deur. Plinten en onder het bed meenemen met het kiersmondstuk.", []],
+      ["Emmer klaarmaken", "Lauw water met een dop allesreiniger of groene zeep. Tweede emmer met schoon water is een luxe die werkt.", [["dop op 5 liter", ""]]],
+      ["Dweilen naar de deur toe", "Mop goed uitwringen. Laminaat en hout: alleen klamvochtig, nooit nat.", [["vlakmop", ""]]],
+      ["Laten drogen", "Raam open, 15 minuten niet overheen lopen. Daarna meubels terug.", []]
+    ], need: ["Stofzuiger met kiersmondstuk", "Vlakmop met microvezelhoes", "Emmer", "Allesreiniger of groene zeep"],
+       tip: "Wekelijks een kwartiertje is genoeg. Kruimels tussendoor? Stoffer en blik, niet de stofzuiger pakken."
+    }
+  };
+  let curRoom = store.get("ss-room", "leef");
+  if (!rooms[curRoom]) curRoom = "leef";
+  function renderRoom() {
+    renderTabs($("#roomTabs"), rooms, curRoom, k => { curRoom = k; store.set("ss-room", k); renderRoom(); });
+    const r = rooms[curRoom];
+    $("#roomBody").innerHTML = `
+      <ol class="steps">${r.steps.map(s => `<li><b>${esc(s[0])}</b><p>${esc(s[1])}</p>${s[2].length ? `<div class="tags">${s[2].map(t => tag(t[0], t[1])).join("")}</div>` : ""}</li>`).join("")}</ol>
+      <div class="aside-card">
+        <span class="eyebrow">Tijd</span><h3>${r.time}</h3>
+        <span class="eyebrow">Pak erbij</span>
+        <ul>${r.need.map(n => `<li>${esc(n)}</li>`).join("")}</ul>
+        <span class="eyebrow">Tip</span><p>${esc(r.tip)}</p>
+      </div>`;
+  }
+
+  /* ---------- Afwas ---------- */
+  const D = (p) => `<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+  const flow = [
+    [D('<path d="M15 8h18l-2 30a3 3 0 0 1-3 2h-8a3 3 0 0 1-3-2z"/><path d="M16 18h16"/>'), "Glazen", "en mokken"],
+    [D('<path d="M16 6v14a4 4 0 0 0 4 4v18"/><path d="M12 6v10M20 6v10"/><path d="M32 42V6c4 3 6 9 6 15h-6"/>'), "Bestek", "messen apart"],
+    [D('<circle cx="24" cy="24" r="16"/><circle cx="24" cy="24" r="9"/>'), "Borden", ""],
+    [D('<path d="M6 20h36a18 18 0 0 1-36 0z"/><path d="M18 40h12"/>'), "Kommen", "en schalen"],
+    [D('<rect x="9" y="14" width="30" height="22" rx="4"/><path d="M7 14h34"/>'), "Bakjes", "plastic en vorm"],
+    [D('<path d="M8 20h26v12a6 6 0 0 1-6 6H14a6 6 0 0 1-6-6z"/><path d="M34 24h8"/><path d="M14 14v-2M21 14v-3M28 14v-2"/>'), "Pannen", "als laatste"]
+  ];
+  $("#flow").innerHTML = flow.map(f => `<div>${f[0]}<b>${f[1]}</b>${f[2] ? `<span>${f[2]}</span>` : "<span>&nbsp;</span>"}</div>`).join("");
+
+  const dishSteps = [
+    ["Schrapen", "Etensresten in de afvalbak (niet in de gootsteen). Vet uit de pan met keukenpapier afvegen; vet in de afvoer = verstopping."],
+    ["Voorweken", "Aangekoekte pannen en ovenschalen met heet water en een druppel afwasmiddel laten staan terwijl je de rest doet."],
+    ["Heet sop maken", "Teil vullen met zo heet mogelijk water (handschoenen aan) en een kleine scheut afwasmiddel. Meer schuim is niet schoner."],
+    ["Wassen in de volgorde hierboven", "Glazen eerst, pannen als laatste. Zo blijft het water het langst schoon. Borstel aan de binnenkant van mokken en glazen."],
+    ["Naspoelen", "Kort onder de kraan of in een tweede bak met schoon water. Dan geen zeepsmaak en geen strepen."],
+    ["Laten uitdruipen", "In het afdruiprek, open kant naar beneden. Aan de lucht drogen is hygiënischer dan met een theedoek."],
+    ["Nieuw water bij lauw of vet sop", "Voelt het water lauw of drijft er vet op? Weggooien en opnieuw. Halverwege verversen is normaal."],
+    ["Afronden", "Teil omspoelen, borstel uitspoelen en rechtop laten drogen, gootsteen en kraan afnemen."]
+  ];
+  $("#dishSteps").innerHTML = dishSteps.map(s => `<li><b>${s[0]}</b><p>${s[1]}</p></li>`).join("");
+
+  const care = [
+    ["Afwasborstel", "elke 4 weken", "Wekelijks uitkoken of 10 min in heet water met soda. Rechtop laten drogen."],
+    ["Spons / schuurspons", "elke week", "Een natte spons is een bacteriënkweek. Goed uitknijpen en laten drogen."],
+    ["Theedoeken", "elke 2–3 dagen", "Wassen op 60 °C. Gebruik ze alleen voor schone afwas, niet voor je handen."],
+    ["Vaatdoek", "elke 1–2 dagen", "In de was op 60 °C. Ruikt hij muf, dan meteen wisselen."],
+    ["Afdruiprek", "elke week", "Kalk en aanslag in de lekbak met azijn wegnemen."]
+  ];
+  $("#care").innerHTML = care.map(c => `<div><b>${c[0]}</b><span class="mono">${c[1]}</span><p>${c[2]}</p></div>`).join("");
+
+  const dont = [
+    ["Scherpe messen in de teil", "Je ziet ze niet in het sop. Was ze los en leg ze direct in het rek."],
+    ["Houten planken en lepels laten weken", "Hout zwelt en barst. Snel wassen, afdrogen, af en toe een druppel olie."],
+    ["Gietijzer met zeep schrobben", "Heet water en een borstel, direct droog en dun invetten."],
+    ["Antiaanbakpan met schuurspons", "Gebruik de zachte kant of een borstel; krassen beschadigen de laag."],
+    ["Vet door de gootsteen", "Laat het stollen en gooi het bij het restafval."]
+  ];
+  $("#dishDont").innerHTML = dont.map(d => `<li><span class="x">✕</span><span><b>${d[0]}.</b> ${d[1]}</span></li>`).join("");
+
+  /* ---------- Middelen ---------- */
+  const products = [
+    ["Allesreiniger", "neutraal", "Vloeren, aanrecht, kastjes, deuren. Je dagelijkse basismiddel.", "Natuursteen (check etiket), beeldschermen.", "1 dop (± 25 ml) op 5 liter water. Op een doek: paar druppels."],
+    ["Afwasmiddel", "neutraal", "Afwas, maar ook als mild sopje voor vettige kastjes en de spatwand.", "Niet in grote hoeveelheden; schuim spoel je lastig weg.", "± 1 theelepel per teil heet water."],
+    ["Schoonmaakazijn", "zuur", "Kalk op kranen, douchetegels, waterkoker, wc-ring. Ook tegen geurtjes in de koelkast.", "Marmer, natuursteen, rubber/kitranden (langdurig), gietijzer. Nooit met chloor.", "Kalk: puur. Dagelijks: 1 deel azijn op 1 deel water."],
+    ["Citroenzuur", "zuur", "Ontkalken van waterkoker en kraan. Ruikt minder sterk dan azijn.", "Natuursteen, emaille. Nooit met chloor.", "2 eetlepels per liter warm water."],
+    ["Ontvetter", "basisch", "Afzuigkap, spatwand, ovendeur.", "Inductieplaat, aluminium, gelakt hout. Handschoenen aan.", "Inspuiten, 2–5 min laten werken, afnemen, naspoelen."],
+    ["Soda (kristalsoda)", "basisch", "Sterk ontvetten: afzuigkapfilter, afvoer, aangekoekte pannen, afwasborstel uitkoken.", "Aluminium, hout, lakwerk. Handschoenen aan.", "Gewone soda: 1 eetlepel per liter heet water. Geconcentreerde soda: veel minder, kijk op de doos."],
+    ["Zuiveringszout (baking soda)", "basisch", "Mild schuurmiddel als pasta: oven, aangebrande pan, gootsteen. Neutraliseert geurtjes.", "Weinig risico; niet op hoogglans krassen.", "Pasta: 3 delen zout op 1 deel water."],
+    ["Schuurmiddel (cream)", "basisch", "Gootsteen, wastafel, aangekoekt vuil op tegels.", "Glas, inductieplaat, hoogglans, antiaanbak.", "Klein beetje op een vochtige spons, naspoelen."],
+    ["Kookplaatreiniger", "neutraal", "Je inductieplaat: verwijdert vet, kalkvlekken en verkleuring en laat een beschermlaagje achter.", "Schuursponzen en schuurmiddel op de plaat; die krassen het glas.", "Paar druppels op koude plaat, uitwrijven met keukenpapier, droog nawrijven."],
+    ["Badkamerreiniger / antikalkspray", "zuur", "Douchetegels, douchevloer, kranen. Handiger alternatief voor azijn.", "Natuursteen. Nooit met chloor.", "Inspuiten, 5–10 min laten werken, afspoelen."],
+    ["WC-reiniger (gel)", "zuur", "Binnenkant toiletpot en de kalkrand.", "Nooit samen met chloor gebruiken.", "Onder de rand spuiten, 10 min of een nacht laten werken."],
+    ["Glasreiniger", "neutraal", "Spiegels, ramen, glazen tafel.", "Beeldschermen (droge doek gebruiken).", "Of zelf: water met een scheut spiritus."],
+    ["Chloor (optioneel)", "chloor", "Alleen voor schimmel in kitranden en voegen. Niet op je douchegordijn tenzij het etiket het toestaat.", "NOOIT mengen met azijn, zuur of ammoniak. Niet op textiel.", "Volg het etiket. Raam open, handschoenen aan."]
+  ];
+  const owned = {
+    "Allesreiniger": "Dettol blauw, Dettol geel, AH allesreiniger spray",
+    "Afwasmiddel": "Dreft Quickwash, Dreft 3in1 spray",
+    "Schoonmaakazijn": "AH schoonmaakazijn, AH natuurazijn",
+    "Ontvetter": "Dasty Classic",
+    "Soda (kristalsoda)": "Drie Hoek (geconcentreerd)",
+    "Schuurmiddel (cream)": "AH schuurmiddel citrus",
+    "Badkamerreiniger / antikalkspray": "Dubro, Antikal",
+    "WC-reiniger (gel)": "Super Finn",
+    "Citroenzuur": "",
+    "Kookplaatreiniger": "",
+    "Zuiveringszout (baking soda)": "",
+    "Glasreiniger": "",
+    "Chloor (optioneel)": ""
+  };
+  const phLabel = { zuur: "zuur · kalk", basisch: "basisch · vet", neutraal: "neutraal", chloor: "chloor · let op" };
+  $("#products").innerHTML = products.map(p => `
+    <article class="prod">
+      <div class="prod-head"><h3>${esc(p[0])}</h3><span class="ph ${p[1]}">${phLabel[p[1]]}</span></div>
+      <dl>
+        <div><dt>Gebruik voor</dt><dd>${esc(p[2])}</dd></div>
+        <div><dt>Niet op / niet met</dt><dd>${esc(p[3])}</dd></div>
+      </dl>
+      <div class="dose">${esc(p[4])}</div>
+      <p class="mine-line">${owned[p[0]] ? `In je kast: <b>${esc(owned[p[0]])}</b>` : "Heb je nog niet"}</p>
+    </article>`).join("");
+  /* ---------- Jouw kast ---------- */
+  const pick = [
+    ["Afwas", "Dreft Quickwash"],
+    ["Aangekoekte pan of ovenschaal", "Dreft 3in1 Power spray"],
+    ["Inductieplaat", "Dreft 3in1 spray of een vochtige doek, droog nawrijven"],
+    ["Aanrecht, fronten, spatwand", "AH Keukenreiniger"],
+    ["Afzuigkap, vet achter het fornuis", "Dasty Ontvetter"],
+    ["Afzuigkapfilter, afvoer", "Drie Hoek Kristal Soda"],
+    ["Gootsteen of wastafel dof", "AH Schuurmiddel"],
+    ["Tafel, kastjes, vensterbank", "AH Allesreiniger spray"],
+    ["Dweilen", "Dettol Allesreiniger blauw"],
+    ["Deurklink, lichtknop, buitenkant wc", "Dettol Complete Clean geel of Dettol doekjes"],
+    ["Direct na het douchen", "Antikal Shower Glass Express"],
+    ["Badkamer, wekelijkse beurt", "Dubro Ultra Badkamerreiniger"],
+    ["Binnenkant wc", "Super Finn Toilet Gel"],
+    ["Kalk, waterkoker ontkalken", "AH Schoonmaakazijn"],
+    ["Snel tussendoor", "Cif Cleanboost doekjes"]
+  ];
+  $("#pick").innerHTML = `<div class="pick-row head"><span>Als je dit wilt doen</span><span>Pak je dit</span></div>` +
+    pick.map(r => `<div class="pick-row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("");
+
+  // [id, naam, soort, type, gebruik voor, niet, hoe, op?, waarschuwing]
+  const shelf = [
+    ["dreft", "Dreft Quickwash XL", "afwasmiddel", "neutraal", "Afwassen met de hand. Ook een mild sopje voor vettige kastjes.", "De vloer: te veel schuim.", "Geconcentreerd: 1 theelepel per teil heet water is genoeg.", "Altijd op voorraad houden; je gebruikt het elke dag."],
+    ["dreftspray", "Dreft 3in1 Power spray", "afwasspray", "neutraal", "Aangekoekte pannen en ovenschalen zonder weken. Volgens het etiket ook gootsteen en kookplaat.", "Houten planken, gietijzer.", "Op de pan spuiten, 1–2 min laten werken, afwassen. Kookplaat: spuiten, vegen, droog nawrijven.", "Pan laten weken in heet water met Dreft Quickwash."],
+    ["keuken", "AH Keukenreiniger", "keukenspray", "neutraal", "Dagelijks: aanrecht, fronten, grepen, spatwand, tafel.", "Je inductieplaat (gebruik daar de Dreft spray of een vochtige doek), onbehandeld hout.", "Spuiten, afnemen met de groene doek.", "Bewaar de fles en vul hem met water en een paar druppels Dreft."],
+    ["dasty", "Dasty Classic Ontvetter", "ontvetter", "basisch", "Afzuigkap, spatwand achter de kookplaat, ovendeur, vette tegels.", "Inductieplaat, aluminium, gelakt hout en gelakte kastjes, warme oppervlakken. Handschoenen aan.", "Hardnekkig vet: puur. Licht vuil: verdunnen volgens het etiket. 2–5 min laten werken, afnemen, naspoelen.", "Heet water met Drie Hoek soda."],
+    ["soda", "Drie Hoek Kristal Soda", "geconcentreerde soda", "basisch", "Afzuigkapfilter, afvoer, vette pannen, afwasborstel uitkoken.", "Aluminium, hout, lakwerk. Handschoenen aan.", "Geconcentreerd, dus weinig nodig. Sop: 1 eetlepel per 10 liter. Filter: 1–2 eetlepels in een gootsteen kokend water. Afvoer: 1 eetlepel met een ketel kokend water.", "Dasty voor vet; heet water met Dreft voor de afvoer."],
+    ["schuur", "AH Schuurmiddel citrus", "schuurmiddel", "basisch", "Gootsteen, wastafel, aangekoekt vuil op tegels.", "Inductieplaat, spiegel, hoogglans, antiaanbakpannen.", "Klein beetje op een vochtige spons, naspoelen.", "Pasta van zuiveringszout en water."],
+    ["dettolblauw", "Dettol Allesreiniger Katoenfris 2L", "allesreiniger om te verdunnen", "neutraal", "Dweilen en grote oppervlakken.", "Laminaat te nat maken.", "Een dop in een emmer lauw water (zie etiket).", "Een paar druppels Dreft in de emmer. Weinig, anders schuimt het."],
+    ["dettolgeel", "Dettol Complete Clean", "allesreiniger, klaar voor gebruik", "neutraal", "Buitenkant wc, deurklinken, lichtknoppen, prullenbak.", "Plekken waar eten op komt, tenzij je daarna nanemen met water.", "Puur op de doek (rood voor de wc, blauw voor de rest), afnemen.", "Dettol doekjes."],
+    ["ahalles", "AH Allesreiniger spray citrus", "allesreiniger spray", "neutraal", "Tafel, kastjes, vensterbank, deuren, snel tussendoor.", "Beeldschermen, onbehandeld hout.", "Op de doek of het oppervlak spuiten, afnemen.", "Bewaar de fles en vul hem met water en een dop Dettol blauw."],
+    ["azijn", "AH Schoonmaakazijn citrus", "schoonmaakazijn", "zuur", "Kalk op kraan en tegels, waterkoker, kalkrand in de wc, koelkast, magnetron.", "Natuursteen, kitranden en rubber (langdurig), gietijzer. Nooit samen met chloor.", "Kalk: puur. Dagelijks: 1 deel azijn op 1 deel water in een sprayflacon.", "Natuurazijn (zwakker) of Antikal."],
+    ["natuurazijn", "AH Witte natuurazijn", "keukenazijn", "zuur", "Koken. Kan ook mild schoonmaken: koelkast, magnetron.", "Hetzelfde als schoonmaakazijn.", "Zwakker dan schoonmaakazijn: puur gebruiken en langer laten inwerken. Bewaar hem liever voor in de keuken.", "Schoonmaakazijn."],
+    ["antikal", "Antikal Shower Glass Express", "antikalkspray, niet naspoelen", "zuur", "Direct na het douchen op tegels en kraan, zodat kalk geen kans krijgt.", "Natuursteen. Nooit samen met chloor.", "Na het douchen spuiten, niet naspoelen. Met de trekker erover werkt het het best.", "Sprayflacon met azijn en water 1:1."],
+    ["dubro", "Dubro Ultra Badkamerreiniger", "badkamerreiniger", "zuur", "De wekelijkse beurt: wastafel, kraan, douchetegels, douchevloer, buitenkant wc.", "Natuursteen. Nooit samen met chloor.", "Spuiten, 5 min laten werken, afnemen met de gele doek, naspoelen.", "Schoonmaakazijn."],
+    ["superfinn", "Super Finn Toilet Gel Lavender", "wc-gel", "check", "Binnenkant van de pot, onder de rand.", "Buitenkant wc en andere oppervlakken.", "Onder de rand spuiten, 10 min of een nacht laten werken, borstelen, doortrekken.", "Schoonmaakazijn een nacht laten inwerken.", "Check het etiket op chloor; zie hierboven."],
+    ["dettoldoekjes", "Dettol hygiënische doekjes", "reinigingsdoekjes", "neutraal", "Contactpunten, wc-bril tussendoor.", "Nooit in de wc doortrekken: verstopping. Gewoon in de prullenbak.", "Eén doekje per klus.", "Dettol Complete Clean op een doek."],
+    ["cif", "Cif Cleanboost doekjes", "reinigingsdoekjes", "neutraal", "Snel aanrecht en tafel tussendoor. Volgens het etiket veilig waar eten komt.", "Niet in de wc doortrekken.", "Afnemen, klaar.", "AH Keukenreiniger."]
+  ];
+  const kindLabel = { zuur: "zuur · kalk", basisch: "basisch · vet", neutraal: "neutraal", check: "check etiket" };
+  let stock = store.get("ss-stock", {});
+  function renderShelf() {
+    $("#shelf").innerHTML = shelf.map(p => {
+      const st = stock[p[0]] || "vol";
+      return `<article class="item" data-stock="${st}">
+        <div class="prod-head"><div><h3>${esc(p[1])}</h3><span class="kind">${esc(p[2])}</span></div><span class="ph ${p[3] === "check" ? "chloor" : p[3]}">${kindLabel[p[3]]}</span></div>
+        ${p[8] ? `<p class="warnline">${esc(p[8])}</p>` : ""}
+        <dl>
+          <div><dt>Gebruik voor</dt><dd>${esc(p[4])}</dd></div>
+          <div><dt>Niet op / niet met</dt><dd>${esc(p[5])}</dd></div>
+          <div><dt>Op?</dt><dd>${esc(p[7])}</dd></div>
+        </dl>
+        <div class="dose">${esc(p[6])}</div>
+        <div class="stock" role="group" aria-label="Voorraad ${esc(p[1])}">
+          ${[["vol", "Op voorraad"], ["bijna", "Bijna op"], ["op", "Op"]].map(([v, l]) =>
+            `<button type="button" data-id="${p[0]}" data-v="${v}" aria-pressed="${st === v}">${l}</button>`).join("")}
+        </div>
+      </article>`;
+    }).join("");
+    const low = shelf.filter(p => stock[p[0]] && stock[p[0]] !== "vol");
+    $("#refillCount").textContent = low.length ? low.length + " product" + (low.length > 1 ? "en" : "") : "";
+    $("#refill").innerHTML = low.length
+      ? low.map(p => `<li><div class="check" style="cursor:default"><span class="box" style="border-color:${stock[p[0]] === "op" ? "var(--warn)" : "var(--sponge)"}"></span><span class="txt"><b>${esc(p[1])}</b><span>${stock[p[0]] === "op" ? "Op. Tot je nieuwe hebt: " + esc(p[7]) : "Bijna op"}</span></span><span class="min"></span></div></li>`).join("")
+      : `<li><div class="check" style="cursor:default;grid-template-columns:1fr"><span class="txt"><b>Alles op voorraad</b><span>Zet hierboven een product op Bijna op of Op.</span></span></div></li>`;
+  }
+  $("#shelf").addEventListener("click", e => {
+    const b = e.target.closest(".stock button"); if (!b) return;
+    if (b.dataset.v === "vol") delete stock[b.dataset.id]; else stock[b.dataset.id] = b.dataset.v;
+    store.set("ss-stock", stock); renderShelf();
+    const again = document.querySelector(`.stock button[data-id="${b.dataset.id}"][data-v="${b.dataset.v}"]`); if (again) again.focus();
+  });
+
+  const missing = [
+    ["b-zout", "Zuiveringszout (baking soda)", "Oven, aangebrande pan, koelkastgeur. Goedkoop en mild."],
+    ["b-glasdoek", "Microvezel glasdoek", "Spiegel en kraan streeploos, alleen met water."],
+    ["b-spray", "Lege sprayflacon", "Of spoel een lege uit. Voor azijn en water 1:1."],
+    ["b-kookplaat", "Kookplaatreiniger (optioneel)", "Voor kalkvlekken en verkleuring op je inductieplaat."],
+    ["b-schimmel", "Schimmelspray met chloor (alleen als nodig)", "Op je foto lijken er donkere puntjes bij het badkamerraam te zitten. Is dat schimmel, dan heb je dit nodig. Zie Probleem oplossen."]
+  ];
+  let bought = store.get("ss-bought", {});
+  function renderMissing() {
+    $("#missing").innerHTML = missing.map(m => checkRow("buy", m[0], m[1], m[2], bought[m[0]] ? "gekocht" : "", !!bought[m[0]])).join("");
+  }
+  $("#missing").addEventListener("change", e => {
+    const t = e.target; if (t.dataset.g !== "buy") return;
+    if (t.checked) bought[t.dataset.id] = 1; else delete bought[t.dataset.id];
+    store.set("ss-bought", bought); renderMissing();
+    const el = document.getElementById(t.id); if (el) el.focus();
+  });
+
+
+  /* ---------- Probleem oplossen ---------- */
+  const fixes = [
+    ["Kalk op kraan of douchetegels", "kalk kraan douche tegels wit", ["Schoonmaakazijn", "Gele doek"], ["Doek of keukenpapier drenken in azijn.", "Om de kraan wikkelen of tegen de tegels plakken, 15–30 min laten zitten.", "Afnemen, naspoelen met water.", "Droogwrijven, anders komt de kalk terug."]],
+    ["Waterkoker ontkalken", "kalk waterkoker", ["Azijn of citroenzuur"], ["Halfvol met water en azijn (1:1) of 2 el citroenzuur.", "Aan de kook brengen, 30 min laten staan.", "Leeggieten, twee keer schoon water koken en weggooien."]],
+    ["Zwarte schimmel in kitrand", "schimmel kit voeg zwart douche", ["Chloorhoudende schimmelspray", "Handschoenen"], ["Raam open. Eerst goed naspoelen als je net azijn gebruikte.", "Inspuiten, 15–30 min laten werken.", "Afspoelen en droogmaken.", "Gaat het niet weg? Dan zit het in de kit en moet de kit vervangen worden."]],
+    ["Aangebrande pan", "pan aangebrand aangekoekt", ["Zuiveringszout", "Houten spatel"], ["Bodem bedekken met water en 2 el zuiveringszout.", "Aan de kook brengen, 10 min laten staan.", "Losschrapen met hout, dan normaal afwassen.", "Antiaanbak: niet schuren, alleen weken."]],
+    ["Vette afzuigkapfilter", "afzuigkap filter vet", ["Soda", "Afwasborstel"], ["Gootsteen of teil vullen met kokend water en 1–2 el soda (geconcentreerd: 1 el).", "Filter 20 min laten weken.", "Borstelen, naspoelen, laten drogen."]],
+    ["Stinkende of trage afvoer", "afvoer stank verstopt gootsteen", ["Soda", "Kokend water"], ["Zeefje en haren eruit halen.", "1–2 el soda in de afvoer, ketel kokend water erachteraan.", "Helpt het niet? Sifon onder de gootsteen losdraaien (emmer eronder) en schoonmaken."]],
+    ["Magnetron aangekoekt", "magnetron vies spetters", ["Azijn of citroen"], ["Kom water met scheut azijn of halve citroen erin.", "3–5 min op vol vermogen.", "2 min deur dicht laten, dan alles makkelijk uitvegen."]],
+    ["Oven vet en aangebrand", "oven vet aangebrand", ["Zuiveringszout", "Azijn in spray"], ["Pasta van zuiveringszout en water op de wanden smeren (niet op verwarmingselementen).", "Een nacht laten intrekken.", "Uitvegen met een natte doek, resten wegspuiten met azijn (bruist), droog nawrijven."]],
+    ["Strepen op spiegel of ramen", "strepen spiegel raam glas", ["Glasdoek", "Spiritus"], ["Glasdoek licht nat, of water met een scheutje spiritus.", "Eén richting afnemen, dan droog nawrijven.", "Niet in fel zonlicht werken."]],
+    ["Koelkast ruikt", "koelkast stank geur", ["Azijn", "Zuiveringszout"], ["Alles eruit, over datum weg.", "Afnemen met water en scheut azijn, droogmaken.", "Open bakje zuiveringszout achterin zetten, elke 3 maanden vervangen."]],
+    ["Kalkrand in de wc", "wc toilet kalk rand", ["WC-gel of azijn", "WC-borstel"], ["Water zo ver mogelijk wegborstelen.", "Gel of azijn op de rand, een nacht laten werken.", "Borstelen en doortrekken."]],
+    ["Vetspatten op tegels of muur", "vet tegels muur keuken spatwand", ["Ontvetter of sopje"], ["Inspuiten of nat maken, 2 min laten werken.", "Afnemen met groene doek.", "Naspoelen en droogmaken."]],
+    ["Aangebrand op de inductieplaat", "kookplaat inductie aangebrand glas", ["Glasschraper", "Kookplaatreiniger"], ["Plaat koud laten worden.", "Schraper onder een lage hoek, rustig wegschuiven.", "Kookplaatreiniger of druppel afwasmiddel, droog nawrijven. Geen schuurmiddel."]],
+    ["Vlek in bank of matras", "vlek bank matras textiel", ["Koud water", "Mild sopje"], ["Deppen, niet wrijven.", "Bloed en eiwit altijd met koud water.", "Mild sopje met afwasmiddel, deppen met schone doek, goed laten drogen. Eerst testen op onzichtbare plek."]],
+    ["Roze of zwarte aanslag op douchegordijn", "douchegordijn gordijn schimmel roze zwart douche", ["Wasmachine of emmer", "Schoonmaakazijn"], ["Gordijn van de ringen halen.", "Wasmachine 30–40 °C met twee handdoeken en een scheut azijn in het wasverzachtervakje.", "Zonder wasmachine: een uur weken in een emmer warm water met 1 deel azijn op 3 delen water, dan de zoom borstelen.", "Nat terughangen en uitgespreid laten drogen. Komt het steeds terug: een nieuw gordijn kost weinig."]],
+    ["Schimmel of vocht op muur/raam", "vocht condens raam schimmel muur", ["Ventileren", "Chloorhoudende schimmelspray"], ["Condens 's ochtends van het raam afnemen.", "Plekjes behandelen met schimmelspray, raam open.", "Daarna dagelijks ventileren, vooral na koken en douchen. Blijft het terugkomen: meld het bij je verhuurder."]]
+  ];
+  const chipList = ["kalk", "schimmel", "vet", "aangebrand", "afvoer", "stank", "glas"];
+  $("#chips").innerHTML = chipList.map(c => `<button class="chip" type="button" data-q="${c}">${c}</button>`).join("");
+  function renderFixes() {
+    const q = $("#q").value.trim().toLowerCase();
+    const list = fixes.filter(f => !q || (f[0] + " " + f[1] + " " + f[2].join(" ")).toLowerCase().includes(q));
+    $("#fixes").innerHTML = list.length ? list.map(f => `
+      <article class="fix">
+        <h3>${esc(f[0])}</h3>
+        <div class="need">${f[2].map(n => tag(n)).join("")}</div>
+        <ol>${f[3].map(s => `<li>${esc(s)}</li>`).join("")}</ol>
+      </article>`).join("") : `<p class="empty">Niets gevonden voor “${esc(q)}”. Probeer een kortere zoekterm, zoals kalk of vet.</p>`;
+  }
+  $("#q").addEventListener("input", renderFixes);
+  $("#chips").addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    $("#q").value = $("#q").value === b.dataset.q ? "" : b.dataset.q; renderFixes();
+  });
+
+  /* ---------- Benodigdheden ---------- */
+  $("#colors").innerHTML = Object.values(cloth).map(c =>
+    `<div class="cloth"><span class="sw" style="background:${c[0]}"></span><div><b>${c[1]}</b><span>${c[2]}</span></div></div>`).join("");
+  const kit = {
+    "Doeken en borstels": [
+      ["doeken", "Microvezeldoeken in 4 kleuren", "Minstens 2 per kleur, dan heb je er altijd één in de was"],
+      ["glasdoek", "Glasdoek (fijne microvezel)", ""],
+      ["borstel", "Afwasborstel", ""],
+      ["spons", "Sponzen met schuurkant", "Pak van 5–10"],
+      ["wcborstel", "WC-borstel met dichte houder", "Dicht, omdat de wc in je badkamer staat"],
+      ["tandenborstel", "Oude tandenborstel", "Voegen, kraanranden, hoekjes"],
+      ["theedoeken", "Theedoeken (5–7 stuks)", ""],
+      ["vaatdoeken", "Vaatdoeken (3–5 stuks)", ""]
+    ],
+    "Afwasplek": [
+      ["teil", "Afwasteil", "Past in je gootsteen; bespaart water"],
+      ["rek", "Afdruiprek met lekbak", "Opvouwbaar als je weinig aanrecht hebt"],
+      ["handschoenen", "Huishoudhandschoenen", "Zodat je echt heet water kunt gebruiken"],
+      ["spatel", "Houten spatel of pannenschraper", ""]
+    ],
+    "Vloer en algemeen": [
+      ["stofzuiger", "Stofzuiger met kiersmondstuk", ""],
+      ["mop", "Vlakmop met microvezelhoes", "Handiger in een studio dan een klassieke dweil"],
+      ["emmer", "Emmer (± 10 liter)", ""],
+      ["stoffer", "Stoffer en blik", ""],
+      ["trekker", "Trekker", "Voor douchetegels en de badkamervloer"],
+      ["ringen", "Reserve gordijnringen", "Kunststof; metalen ringen roesten"],
+      ["spray", "Lege sprayflacon", "Voor azijn 1:1 met water"],
+      ["schraper", "Glasschraper", "Voor je inductieplaat"],
+      ["zakken", "Vuilniszakken", ""]
+    ],
+  };
+  let have = store.get("ss-have", {});
+  function renderKit() {
+    $("#kit").innerHTML = Object.entries(kit).map(([group, items]) => {
+      const got = items.filter(i => have[i[0]]).length;
+      return `<div><h3>${esc(group)} <span class="mono" style="color:var(--muted);font-weight:400">${got}/${items.length}</span></h3>
+        <ul class="checks">${items.map(i => checkRow("kit", i[0], i[1], i[2], "", !!have[i[0]])).join("")}</ul></div>`;
+    }).join("");
+  }
+  $("#kit").addEventListener("change", e => {
+    const t = e.target; if (t.dataset.g !== "kit") return;
+    if (t.checked) have[t.dataset.id] = 1; else delete have[t.dataset.id];
+    store.set("ss-have", have); renderKit();
+    const el = document.getElementById(t.id); if (el) el.focus();
+  });
+
+  /* ---------- Nav: actieve sectie ---------- */
+  const links = [...document.querySelectorAll("#navlinks a")];
+  const secs = links.map(a => document.querySelector(a.getAttribute("href")));
+  function spy() {
+    let idx = -1;
+    secs.forEach((s, i) => { if (s.getBoundingClientRect().top < 140) idx = i; });
+    links.forEach((a, i) => a.classList.toggle("on", i === idx));
+    if (idx >= 0) {
+      const a = links[idx], bar = a.parentElement;
+      const l = a.offsetLeft - bar.offsetLeft;
+      if (l < bar.scrollLeft || l + a.offsetWidth > bar.scrollLeft + bar.clientWidth) bar.scrollTo({ left: l - 16, behavior: "smooth" });
+    }
+  }
+  addEventListener("scroll", spy, { passive: true });
+
+  renderPlan(); renderRoom(); renderFixes(); renderKit(); renderShelf(); renderMissing(); spy();
+})();
+</script>
+</body>
+</html>
