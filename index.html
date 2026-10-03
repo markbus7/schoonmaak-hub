@@ -81,6 +81,7 @@ p { margin: 0; }
 .hero .lede { font-size: 1.15rem; color: var(--ink); }
 .facts { display: flex; flex-wrap: wrap; gap: 8px; }
 .fact { background: var(--surface); border: 2px solid var(--grout); border-radius: 999px; padding: 4px 12px; font-family: var(--f-mono); font-size: .8rem; }
+.fact.mine { background: var(--ink); border-color: var(--ink); color: var(--tile); }
 
 .today {
   background: var(--surface); border: 2px solid var(--ink); border-radius: var(--r);
@@ -247,13 +248,19 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 <header class="hero" id="top">
   <div class="wrap">
     <div class="intro">
-      <span class="eyebrow">Schoonmaakhandboek · 1 studio · geen vaatwasser</span>
+      <span class="eyebrow">Schoonmaakhandboek · afgestemd op jouw studio</span>
       <h1>Studio <span class="hl">Schoon</span></h1>
       <p class="lede">Alles op één plek: welk middel waarvoor, in welke volgorde je werkt, wat je in huis moet hebben en hoe je de afwas met de hand goed doet. Vink af wat klaar is; je voortgang blijft op dit apparaat bewaard.</p>
       <div class="facts">
         <span class="fact">± 10 min per dag</span>
         <span class="fact">± 60 min per week</span>
         <span class="fact">± 45 min extra per maand</span>
+      </div>
+      <div class="facts" aria-label="Jouw studio">
+        <span class="fact mine">inductiekookplaat</span>
+        <span class="fact mine">douche met gordijn</span>
+        <span class="fact mine">wc in de badkamer</span>
+        <span class="fact mine">geen vaatwasser</span>
       </div>
     </div>
     <aside class="today" aria-label="Vandaag">
@@ -451,7 +458,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     [I.down, "Van boven naar beneden", "Stof en kruimels vallen naar beneden. Begin bij plafondlamp en kastbovenkant, eindig met de vloer."],
     [I.dry, "Eerst droog, dan nat", "Eerst stoffen, stofzuigen en kruimels weg; daarna pas sop. Nat stof wordt modder."],
     [I.clock, "Laat het middel werken", "Spuit eerst, doe iets anders en kom na 5–10 minuten terug. Dan hoef je bijna niet te schrobben."],
-    [I.clean, "Van schoon naar vies", "Wastafel vóór wc, aanrecht vóór gootsteen, glazen vóór pannen. Zo verspreid je geen bacteriën."],
+    [I.clean, "Van schoon naar vies", "Spiegel en wastafel vóór de wc, aanrecht vóór gootsteen, glazen vóór pannen. Zo verspreid je geen bacteriën."],
     [I.box, "Eerst opruimen", "Je kunt alleen schoonmaken wat vrij ligt. Vijf minuten spullen terugleggen scheelt een kwartier poetsen."],
     [I.air, "Ventileer altijd", "In een studio komen koken, douchen en slapen samen. Raam open tijdens en na het schoonmaken tegen vocht en schimmel."]
   ];
@@ -461,15 +468,16 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   const freq = {
     dag: { label: "Dagelijks", note: "Zet zichzelf elke ochtend terug.", items: [
       ["afwas", "Afwas doen", "Direct na het eten, of uiterlijk één keer per dag.", 10],
-      ["aanrecht", "Aanrecht en kookplaat afnemen", "Groene doek met sopje, daarna droogwrijven.", 3],
-      ["douche", "Douchewand aftrekken", "Met de trekker, direct na het douchen. Voorkomt kalk.", 1],
+      ["aanrecht", "Aanrecht en inductieplaat afnemen", "Plaat afnemen zodra hij afgekoeld is: vochtige groene doek, droog nawrijven tegen strepen.", 3],
+      ["douche", "Douchegordijn uitgespreid laten drogen", "Na het douchen dichtgetrokken laten hangen, niet in plooien. Tegels en vloer even aftrekken.", 1],
       ["bed", "Bed opmaken en luchten", "Dekbed eerst 10 minuten open laten liggen.", 2],
       ["opruimen", "Spullen terug op hun plek", "Kleding, post, kopjes. Een studio voelt meteen groter.", 5],
       ["ventileren", "Ventileren", "Minimaal 15 minuten raam open, zeker na koken en douchen.", 0]
     ]},
     week: { label: "Wekelijks", note: "Zet zichzelf elke maandag terug.", items: [
       ["stof", "Stof afnemen, boven naar beneden", "Kastbovenkant, planken, vensterbank, tv. Droge blauwe microvezeldoek.", 10],
-      ["badkamer", "Badkamer schoon", "Wastafel, kraan, spiegel, douche en als laatste de wc.", 20],
+      ["badkamer", "Badkamer schoon", "Spiegel, wastafel, douche en gordijnzoom, als laatste de wc.", 20],
+      ["wc-tussendoor", "WC tussendoor", "Halverwege de week: pot borstelen, bril en knop afnemen met de rode doek.", 3],
       ["keuken", "Keuken grondig", "Fronten, spatwand, magnetron binnenkant, gootsteen.", 15],
       ["beddengoed", "Beddengoed verschonen", "Wassen op 60 °C.", 10],
       ["textiel", "Handdoeken en theedoeken wassen", "Theedoeken liever elke 2–3 dagen; 60 °C.", 5],
@@ -482,6 +490,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       ["waterkoker", "Waterkoker ontkalken", "Azijn of citroenzuur, zie Probleem oplossen.", 5],
       ["afzuigkap", "Filter afzuigkap ontvetten", "Weken in heet water met soda.", 10],
       ["afvoeren", "Afvoeren doorspoelen", "Haarzeefje legen, soda + kokend water.", 5],
+      ["gordijn", "Douchegordijn wassen", "In de wasmachine op 30–40 °C met twee handdoeken erbij (die schuren mee). Nat terughangen.", 5],
       ["contact", "Contactpunten afnemen", "Deurklinken, lichtknoppen, afstandsbediening, telefoon.", 5],
       ["ramen", "Ramen binnenkant", "Microvezel glasdoek of raamwisser.", 15],
       ["oven", "Magnetron/oven grondig", "Stoom-truc voor de magnetron, zuiveringszout voor de oven.", 15],
@@ -563,9 +572,9 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   /* ---------- Doekkleuren ---------- */
   const cloth = {
     blauw: ["var(--c-blue)", "Blauw", "Algemeen: meubels, kasten, vensterbank"],
-    groen: ["var(--c-green)", "Groen", "Keuken: aanrecht, kookplaat, fronten"],
-    geel: ["var(--c-yellow)", "Geel", "Badkamer: wastafel, douche, tegels"],
-    rood: ["var(--c-red)", "Rood", "Alleen het toilet"],
+    groen: ["var(--c-green)", "Groen", "Keuken: aanrecht, inductieplaat, fronten"],
+    geel: ["var(--c-yellow)", "Geel", "Badkamer: wastafel, douche, tegels (niet de wc)"],
+    rood: ["var(--c-red)", "Rood", "Alleen de wc, en apart bewaren"],
     glas: ["var(--c-grey)", "Glasdoek", "Spiegels, ramen, kraan oppoetsen"]
   };
   const tag = (txt, color) => `<span class="tag">${color ? `<i class="dot" style="background:${cloth[color][0]}"></i>` : ""}${esc(txt)}</span>`;
@@ -582,27 +591,30 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     ], need: ["Blauwe microvezeldoek", "Glasdoek", "Plumeau voor hoge plekken (optioneel)"],
        tip: "Leg een mand bij de deur voor alles wat ‘ergens anders’ hoort. Eén keer per dag leeg."
     },
-    bad: { label: "Badkamer", time: "± 20 min", steps: [
-      ["Raam open of afzuiging aan", "Spullen van de wastafelrand en douchehoek weghalen.", []],
-      ["Inspuiten en laten werken", "Douche, tegels en kraan inspuiten met badkamerreiniger of azijn. WC-gel onder de rand. Laat 10 minuten staan.", [["badkamerreiniger", ""], ["wc-reiniger", ""]]],
+    bad: { label: "Badkamer + wc", time: "± 25 min", steps: [
+      ["Raam open of afzuiging aan", "Spullen van de wastafelrand en uit de douchehoek weghalen. Handdoeken en badmat eruit.", []],
+      ["WC-deksel dicht, doortrekken", "Eerst één keer doortrekken met de deksel dicht. Zo spat er niets op wat je zo schoonmaakt.", []],
+      ["Inspuiten en laten werken", "Douchetegels, douchevloer en kraan inspuiten met badkamerreiniger of azijn. WC-gel onder de rand. Laat 10 minuten staan.", [["badkamerreiniger", ""], ["wc-reiniger", ""]]],
       ["Spiegel", "Eerst de spiegel, zodat spetters van de rest er niet weer op komen.", [["glasdoek", "glas"]]],
       ["Wastafel en kraan", "Afnemen, naspoelen, kraan droog oppoetsen. Glanzende kraan = schone badkamer.", [["gele doek", "geel"]]],
-      ["Douche", "Tegels en wand afnemen van boven naar beneden, afspoelen, aftrekken. Haarzeef leegmaken.", [["gele doek", "geel"]]],
-      ["Toilet, altijd als laatste", "Buitenkant: knop, deksel, bril (boven en onder), pot buitenkant, voet. Dan binnenkant met de borstel.", [["rode doek", "rood"], ["wc-borstel", ""]]],
+      ["Douche", "Gordijn opzij. Tegels van boven naar beneden afnemen, afspoelen, aftrekken. Haarzeef leegmaken.", [["gele doek", "geel"]]],
+      ["Douchegordijn", "Onderste 30 cm controleren op roze of zwarte aanslag. Afnemen met sopje of azijn en uitgespreid laten drogen.", [["gele doek", "geel"]]],
+      ["Toilet, altijd als laatste", "Buitenkant: knop, deksel, bril (boven en onder), pot buitenkant, voet en de vloer rond de pot. Dan binnenkant met de borstel. Borstel tussen bril en pot laten uitdruipen.", [["rode doek", "rood"], ["wc-borstel", ""]]],
       ["Doeken direct in de was", "Rode en gele doeken op 60 °C, niet samen met keukendoeken laten liggen.", []]
-    ], need: ["Badkamerreiniger of schoonmaakazijn", "WC-reiniger", "Gele en rode doek", "Douchetrekker", "Oude tandenborstel voor voegen"],
-       tip: "Trek elke dag na het douchen de wand af. Dat ene minuutje voorkomt 90% van de kalk."
+    ], need: ["Badkamerreiniger of schoonmaakazijn", "WC-reiniger", "Gele en rode doek", "Trekker voor tegels en vloer", "Oude tandenborstel voor voegen"],
+       tip: "WC en wastafel delen één ruimte: trek altijd door met de deksel dicht en bewaar tandenborstels in een kastje of zo ver mogelijk van de wc."
     },
     keuken: { label: "Keuken", time: "± 20 min", steps: [
       ["Afwas weg en aanrecht leeg", "Eerst de afwas (zie Afwas), dan alles van het aanrecht dat er niet hoort.", []],
-      ["Ontvetter op kookplaat en spatwand", "Inspuiten en laten inwerken terwijl je de rest doet.", [["ontvetter", ""]]],
+      ["Ontvetter op spatwand en afzuigkap", "Inspuiten en laten inwerken terwijl je de rest doet. Niet op de inductieplaat.", [["ontvetter", ""]]],
       ["Fronten en grepen", "Van boven naar beneden, de bovenkastjes eerst. Vooral rond de grepen zit vet.", [["sopje", "groen"]]],
       ["Magnetron", "Kom water met een scheut azijn 3 minuten verwarmen, 2 minuten dicht laten, uitvegen.", [["azijn", "groen"]]],
-      ["Kookplaat en spatwand afnemen", "Nu is het vet losgeweekt. Aangebrand op glas? Glasschraper onder een lage hoek.", [["groene doek", "groen"]]],
+      ["Spatwand afnemen", "Nu is het vet losgeweekt. Afnemen met de groene doek en naspoelen.", [["groene doek", "groen"]]],
+      ["Inductieplaat", "Koude plaat. Aangekoekt eerst weg met de glasschraper onder een lage hoek. Dan kookplaatreiniger, uitwrijven met keukenpapier en droog nawrijven met de glasdoek.", [["kookplaatreiniger", ""], ["glasdoek", "glas"]]],
       ["Aanrecht", "Kruimels eerst wegvegen (droog voor nat), dan sopje, dan droog nawrijven.", [["allesreiniger", "groen"]]],
       ["Gootsteen als laatste", "Afvoerzeefje leeg, gootsteen schuren met cream, kraan droog oppoetsen.", [["schuurmiddel", "groen"]]]
-    ], need: ["Ontvetter", "Allesreiniger of afwasmiddel", "Groene doeken", "Schuursponsje", "Glasschraper (bij keramische/inductieplaat)"],
-       tip: "Spons en theedoek zijn de vieste dingen in je keuken. Zie onderhoud bij Afwas."
+    ], need: ["Ontvetter", "Allesreiniger of afwasmiddel", "Kookplaatreiniger", "Glasschraper", "Groene doeken", "Schuursponsje (niet voor de inductieplaat)"],
+       tip: "Inductie: til pannen op in plaats van te schuiven, dat voorkomt krassen. Suiker of gesmolten plastic direct wegschrapen, zolang het nog zacht is."
     },
     vloer: { label: "Vloeren", time: "± 20 min", steps: [
       ["Alles van de vloer af", "Stoelen op tafel of opzij, kleden oprollen, losse spullen weg.", []],
@@ -675,16 +687,17 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
   const products = [
     ["Allesreiniger", "neutraal", "Vloeren, aanrecht, kastjes, deuren. Je dagelijkse basismiddel.", "Natuursteen (check etiket), beeldschermen.", "1 dop (± 25 ml) op 5 liter water. Op een doek: paar druppels."],
     ["Afwasmiddel", "neutraal", "Afwas, maar ook als mild sopje voor vettige kastjes en de spatwand.", "Niet in grote hoeveelheden; schuim spoel je lastig weg.", "± 1 theelepel per teil heet water."],
-    ["Schoonmaakazijn", "zuur", "Kalk op kranen, douchewand, waterkoker, wc-ring. Ook tegen geurtjes in de koelkast.", "Marmer, natuursteen, rubber/kitranden (langdurig), gietijzer. Nooit met chloor.", "Kalk: puur. Dagelijks: 1 deel azijn op 1 deel water."],
+    ["Schoonmaakazijn", "zuur", "Kalk op kranen, douchetegels, waterkoker, wc-ring. Ook tegen geurtjes in de koelkast.", "Marmer, natuursteen, rubber/kitranden (langdurig), gietijzer. Nooit met chloor.", "Kalk: puur. Dagelijks: 1 deel azijn op 1 deel water."],
     ["Citroenzuur", "zuur", "Ontkalken van waterkoker en kraan. Ruikt minder sterk dan azijn.", "Natuursteen, emaille. Nooit met chloor.", "2 eetlepels per liter warm water."],
-    ["Ontvetter", "basisch", "Kookplaat, afzuigkap, spatwand, ovendeur.", "Aluminium, gelakt hout. Handschoenen aan.", "Inspuiten, 2–5 min laten werken, afnemen, naspoelen."],
+    ["Ontvetter", "basisch", "Afzuigkap, spatwand, ovendeur.", "Inductieplaat, aluminium, gelakt hout. Handschoenen aan.", "Inspuiten, 2–5 min laten werken, afnemen, naspoelen."],
     ["Soda (kristalsoda)", "basisch", "Sterk ontvetten: afzuigkapfilter, afvoer, aangekoekte pannen, afwasborstel uitkoken.", "Aluminium, hout, lakwerk. Handschoenen aan.", "1 eetlepel per liter heet water."],
     ["Zuiveringszout (baking soda)", "basisch", "Mild schuurmiddel als pasta: oven, aangebrande pan, gootsteen. Neutraliseert geurtjes.", "Weinig risico; niet op hoogglans krassen.", "Pasta: 3 delen zout op 1 deel water."],
     ["Schuurmiddel (cream)", "basisch", "Gootsteen, wastafel, aangekoekt vuil op tegels.", "Glas, inductieplaat, hoogglans, antiaanbak.", "Klein beetje op een vochtige spons, naspoelen."],
-    ["Badkamerreiniger / antikalkspray", "zuur", "Douche, tegels, kranen. Handiger alternatief voor azijn.", "Natuursteen. Nooit met chloor.", "Inspuiten, 5–10 min laten werken, afspoelen."],
+    ["Kookplaatreiniger", "neutraal", "Je inductieplaat: verwijdert vet, kalkvlekken en verkleuring en laat een beschermlaagje achter.", "Schuursponzen en schuurmiddel op de plaat; die krassen het glas.", "Paar druppels op koude plaat, uitwrijven met keukenpapier, droog nawrijven."],
+    ["Badkamerreiniger / antikalkspray", "zuur", "Douchetegels, douchevloer, kranen. Handiger alternatief voor azijn.", "Natuursteen. Nooit met chloor.", "Inspuiten, 5–10 min laten werken, afspoelen."],
     ["WC-reiniger (gel)", "zuur", "Binnenkant toiletpot en de kalkrand.", "Nooit samen met chloor gebruiken.", "Onder de rand spuiten, 10 min of een nacht laten werken."],
     ["Glasreiniger", "neutraal", "Spiegels, ramen, glazen tafel.", "Beeldschermen (droge doek gebruiken).", "Of zelf: water met een scheut spiritus."],
-    ["Chloor (optioneel)", "chloor", "Alleen voor schimmel in kitranden en voegen.", "NOOIT mengen met azijn, zuur of ammoniak. Niet op textiel.", "Volg het etiket. Raam open, handschoenen aan."]
+    ["Chloor (optioneel)", "chloor", "Alleen voor schimmel in kitranden en voegen. Niet op je douchegordijn tenzij het etiket het toestaat.", "NOOIT mengen met azijn, zuur of ammoniak. Niet op textiel.", "Volg het etiket. Raam open, handschoenen aan."]
   ];
   const phLabel = { zuur: "zuur · kalk", basisch: "basisch · vet", neutraal: "neutraal", chloor: "chloor · let op" };
   $("#products").innerHTML = products.map(p => `
@@ -699,7 +712,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 
   /* ---------- Probleem oplossen ---------- */
   const fixes = [
-    ["Kalk op kraan of douchewand", "kalk kraan douche wit", ["Schoonmaakazijn", "Gele doek"], ["Doek of keukenpapier drenken in azijn.", "Om de kraan wikkelen of tegen de wand plakken, 15–30 min laten zitten.", "Afnemen, naspoelen met water.", "Droogwrijven, anders komt de kalk terug."]],
+    ["Kalk op kraan of douchetegels", "kalk kraan douche tegels wit", ["Schoonmaakazijn", "Gele doek"], ["Doek of keukenpapier drenken in azijn.", "Om de kraan wikkelen of tegen de tegels plakken, 15–30 min laten zitten.", "Afnemen, naspoelen met water.", "Droogwrijven, anders komt de kalk terug."]],
     ["Waterkoker ontkalken", "kalk waterkoker", ["Azijn of citroenzuur"], ["Halfvol met water en azijn (1:1) of 2 el citroenzuur.", "Aan de kook brengen, 30 min laten staan.", "Leeggieten, twee keer schoon water koken en weggooien."]],
     ["Zwarte schimmel in kitrand", "schimmel kit voeg zwart douche", ["Chloorhoudende schimmelspray", "Handschoenen"], ["Raam open. Eerst goed naspoelen als je net azijn gebruikte.", "Inspuiten, 15–30 min laten werken.", "Afspoelen en droogmaken.", "Gaat het niet weg? Dan zit het in de kit en moet de kit vervangen worden."]],
     ["Aangebrande pan", "pan aangebrand aangekoekt", ["Zuiveringszout", "Houten spatel"], ["Bodem bedekken met water en 2 el zuiveringszout.", "Aan de kook brengen, 10 min laten staan.", "Losschrapen met hout, dan normaal afwassen.", "Antiaanbak: niet schuren, alleen weken."]],
@@ -711,8 +724,9 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
     ["Koelkast ruikt", "koelkast stank geur", ["Azijn", "Zuiveringszout"], ["Alles eruit, over datum weg.", "Afnemen met water en scheut azijn, droogmaken.", "Open bakje zuiveringszout achterin zetten, elke 3 maanden vervangen."]],
     ["Kalkrand in de wc", "wc toilet kalk rand", ["WC-gel of azijn", "WC-borstel"], ["Water zo ver mogelijk wegborstelen.", "Gel of azijn op de rand, een nacht laten werken.", "Borstelen en doortrekken."]],
     ["Vetspatten op tegels of muur", "vet tegels muur keuken spatwand", ["Ontvetter of sopje"], ["Inspuiten of nat maken, 2 min laten werken.", "Afnemen met groene doek.", "Naspoelen en droogmaken."]],
-    ["Aangebrand op kookplaat (glas/inductie)", "kookplaat inductie keramisch aangebrand", ["Glasschraper", "Kookplaatreiniger"], ["Plaat koud laten worden.", "Schraper onder een lage hoek, rustig wegschuiven.", "Kookplaatreiniger of druppel afwasmiddel, droog nawrijven. Geen schuurmiddel."]],
+    ["Aangebrand op de inductieplaat", "kookplaat inductie aangebrand glas", ["Glasschraper", "Kookplaatreiniger"], ["Plaat koud laten worden.", "Schraper onder een lage hoek, rustig wegschuiven.", "Kookplaatreiniger of druppel afwasmiddel, droog nawrijven. Geen schuurmiddel."]],
     ["Vlek in bank of matras", "vlek bank matras textiel", ["Koud water", "Mild sopje"], ["Deppen, niet wrijven.", "Bloed en eiwit altijd met koud water.", "Mild sopje met afwasmiddel, deppen met schone doek, goed laten drogen. Eerst testen op onzichtbare plek."]],
+    ["Roze of zwarte aanslag op douchegordijn", "douchegordijn gordijn schimmel roze zwart douche", ["Wasmachine of emmer", "Schoonmaakazijn"], ["Gordijn van de ringen halen.", "Wasmachine 30–40 °C met twee handdoeken en een scheut azijn in het wasverzachtervakje.", "Zonder wasmachine: een uur weken in een emmer warm water met 1 deel azijn op 3 delen water, dan de zoom borstelen.", "Nat terughangen en uitgespreid laten drogen. Komt het steeds terug: een nieuw gordijn kost weinig."]],
     ["Schimmel of vocht op muur/raam", "vocht condens raam schimmel muur", ["Ventileren", "Chloorhoudende schimmelspray"], ["Condens 's ochtends van het raam afnemen.", "Plekjes behandelen met schimmelspray, raam open.", "Daarna dagelijks ventileren, vooral na koken en douchen. Blijft het terugkomen: meld het bij je verhuurder."]]
   ];
   const chipList = ["kalk", "schimmel", "vet", "aangebrand", "afvoer", "stank", "glas"];
@@ -742,7 +756,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       ["glasdoek", "Glasdoek (fijne microvezel)", ""],
       ["borstel", "Afwasborstel", ""],
       ["spons", "Sponzen met schuurkant", "Pak van 5–10"],
-      ["wcborstel", "WC-borstel met houder", ""],
+      ["wcborstel", "WC-borstel met dichte houder", "Dicht, omdat de wc in je badkamer staat"],
       ["tandenborstel", "Oude tandenborstel", "Voegen, kraanranden, hoekjes"],
       ["theedoeken", "Theedoeken (5–7 stuks)", ""],
       ["vaatdoeken", "Vaatdoeken (3–5 stuks)", ""]
@@ -758,9 +772,10 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       ["mop", "Vlakmop met microvezelhoes", "Handiger in een studio dan een klassieke dweil"],
       ["emmer", "Emmer (± 10 liter)", ""],
       ["stoffer", "Stoffer en blik", ""],
-      ["trekker", "Douchetrekker", ""],
+      ["trekker", "Trekker", "Voor douchetegels en de badkamervloer"],
+      ["ringen", "Reserve gordijnringen", "Kunststof; metalen ringen roesten"],
       ["spray", "Lege sprayflacon", "Voor azijn 1:1 met water"],
-      ["schraper", "Glasschraper", "Alleen bij keramische of inductiekookplaat"],
+      ["schraper", "Glasschraper", "Voor je inductieplaat"],
       ["zakken", "Vuilniszakken", ""]
     ],
     "Middelen (basisset)": [
@@ -772,6 +787,7 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
       ["m-zout", "Zuiveringszout", ""],
       ["m-cream", "Schuurmiddel (cream)", ""],
       ["m-wc", "WC-reiniger", ""],
+      ["m-kookplaat", "Kookplaatreiniger", "Voor inductie / glaskeramiek"],
       ["m-glas", "Glasreiniger of spiritus", ""]
     ]
   };
