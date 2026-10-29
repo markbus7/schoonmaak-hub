@@ -46,6 +46,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 body { margin: 0; background: var(--tile); color: var(--ink); font: 16px/1.55 var(--f-body); -webkit-font-smoothing: antialiased; }
 button { font: inherit; color: inherit; }
@@ -164,6 +165,21 @@ details.rules li span { color: var(--muted); font-size: .92rem; }
 
 /* ---------- Kast ---------- */
 .group-title { margin: 6px 0 -8px; }
+.group-head { display: grid; gap: 2px; margin: 10px 0 -6px; }
+.group-head p { color: var(--muted); font-size: .92rem; }
+.bcards { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+.bcard { background: var(--surface); border: 2px solid var(--grout); border-radius: 14px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.bcard .top-row { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.bcard p { color: var(--muted); font-size: .93rem; }
+.bcard .kv { font-size: .88rem; }
+.bcard .kv b { font-weight: 600; }
+.bcard.mix { border-style: dashed; border-color: var(--ink); }
+.intro-card { background: var(--ink); color: var(--tile); border-radius: var(--r); padding: 18px; display: grid; gap: 6px; }
+.intro-card h2 { color: var(--tile); }
+.intro-card p { opacity: .85; }
+.simple { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.simple li span { color: var(--muted); }
+details.acc.used-up { opacity: .7; }
 .acc-list { display: grid; gap: 8px; }
 details.acc { background: var(--surface); border: 2px solid var(--grout); border-radius: 14px; }
 details.acc[open] { border-color: var(--ink); }
@@ -289,7 +305,7 @@ details.acc[open] .chev { transform: rotate(180deg); }
       <div id="lowAlert"></div>
       <div>
         <div class="label-row" style="margin-bottom:10px"><h2>Ook nog deze week</h2><button class="link" type="button" data-go="lijsten">Alle lijsten</button></div>
-        <ul class="open-list" id="openWeek"></ul>
+        <ul class="checks" id="openWeek"></ul>
       </div>
       <details class="rules">
         <summary>De 6 gouden regels</summary>
@@ -312,7 +328,7 @@ details.acc[open] .chev { transform: rotate(180deg); }
     <section class="screen" id="s-kast" aria-labelledby="h-kast" hidden>
       <div class="head">
         <h1 id="h-kast">Mijn kast</h1>
-        <p class="muted">Tik op een product voor gebruik en dosering. Zet het op Bijna op of Op, dan komt het op je boodschappenlijst.</p>
+        <p class="muted">Tik op een product voor gebruik en dosering. Je basisproducten vul je aan; de rest maak je op.</p>
       </div>
       <div class="seg" role="tablist" id="kastTabs" aria-label="Kast"></div>
       <div id="kastBody" style="display:grid;gap:18px"></div>
@@ -443,11 +459,41 @@ details.acc[open] .chev { transform: rotate(180deg); }
     ["ahalles", "AH Allesreiniger spray", "allesreiniger spray", "neutraal", "Tafel, kastjes, vensterbank, deuren.", "Beeldschermen, onbehandeld hout.", "Op de doek of het oppervlak spuiten, afnemen.", "Vul de lege fles met water en een dop Dettol blauw.", "", "overal"],
     ["dettoldoekjes", "Dettol doekjes", "reinigingsdoekjes", "neutraal", "Contactpunten, wc-bril tussendoor.", "Nooit in de wc doortrekken.", "Eén doekje per klus, daarna in de prullenbak.", "Dettol geel op een doek.", "", "overal"],
     ["azijn", "AH Schoonmaakazijn", "schoonmaakazijn", "zuur", "Kalk op kraan en tegels, waterkoker, kalkrand in de wc, magnetron.", "Natuursteen, kitranden en rubber, gietijzer. Nooit samen met chloor.", "Kalk: puur. Dagelijks: 1 deel azijn op 1 deel water.", "Natuurazijn (zwakker) of Antikal.", "", "overal"],
-    ["natuurazijn", "AH Witte natuurazijn", "keukenazijn", "zuur", "Koken. Kan ook mild schoonmaken.", "Hetzelfde als schoonmaakazijn.", "Zwakker: puur gebruiken en langer laten inwerken.", "Schoonmaakazijn.", "", "overal"]
+    ["natuurazijn", "AH Witte natuurazijn", "keukenazijn", "zuur", "Koken. Kan ook mild schoonmaken.", "Hetzelfde als schoonmaakazijn.", "Zwakker: puur gebruiken en langer laten inwerken.", "Schoonmaakazijn.", "", "overal"],
+    ["mixalles", "Allesreinigerspray", "zelf gemengd in een sprayfles", "neutraal", "Aanrecht, fronten, tafel, kastjes, vensterbank, deurklinken, buitenkant wc.", "Beeldschermen, onbehandeld hout.", "Sprayfles (500 ml) vullen met lauw water en 1 theelepel allesreiniger. Op de doek of het oppervlak spuiten en afnemen.", "Opnieuw mengen.", "", "mix"],
+    ["mixazijn", "Azijnspray", "zelf gemengd in een sprayfles", "zuur", "Kalk op kraan, douchetegels en douchevloer; wastafel; koelkast afnemen.", "Natuursteen, en niet lang op kitranden of rubber. Nooit samen met chloor.", "Sprayfles half schoonmaakazijn, half water. Spuiten, 5–10 min laten werken, afnemen en naspoelen.", "Opnieuw mengen.", "", "mix"]
   ];
   const shelfById = Object.fromEntries(shelf.map(p => [p[0], p]));
   let stock = store.get("ss-stock", {});
-  const lowItems = () => shelf.filter(p => stock[p[0]] === "bijna" || stock[p[0]] === "op");
+  /* Basis: deze zes vul je aan. De rest maak je op; is het op, dan neemt een basisproduct (of een zelf gemengde spray) het over. */
+  const basisIds = ["dreft", "dettolblauw", "azijn", "soda", "schuur", "superfinn"];
+  const isBasis = id => basisIds.includes(id);
+  const isMix = id => shelfById[id] && shelfById[id][9] === "mix";
+  const mixBase = { mixalles: "dettolblauw", mixazijn: "azijn" };
+  const basisInfo = {
+    dreft: ["Afwasmiddel", "Afwas, en een mild sopje voor bijna alles in de keuken.", "Elk merk is goed, huismerk ook."],
+    dettolblauw: ["Allesreiniger", "Verdund in een emmer voor de vloer, en in een sprayfles voor alle oppervlakken.", "Een allesreiniger om te verdunnen. Huismerk is prima."],
+    azijn: ["Schoonmaakazijn", "Alles met kalk: kraan, douche, waterkoker, wc-rand. In een sprayfles ook je badkamerreiniger.", "Goedkoop; elke schoonmaakazijn is goed."],
+    soda: ["Kristalsoda", "Hardnekkig vet (afzuigkap, spatwand) en een trage afvoer.", "Een doos gaat maanden mee."],
+    schuur: ["Schuurmiddel (cream)", "Gootsteen, wastafel en aangekoekt vuil op tegels.", "Elk merk is goed."],
+    superfinn: ["WC-reiniger (gel)", "Binnenkant van de wc, onder de rand.", "Kies er een zonder chloor, dan kun je hem veilig afwisselen met azijn."]
+  };
+  const alt = {
+    dreftspray: ["dreft", "Laat pannen weken in heet water met een druppel afwasmiddel. Inductieplaat: vochtige doek met een druppel afwasmiddel, droog nawrijven."],
+    keuken: ["mixalles", "Hergebruik de lege fles voor je allesreinigerspray."],
+    ahalles: ["mixalles", "Hergebruik de lege fles voor je allesreinigerspray."],
+    dettolgeel: ["mixalles", "Doet hetzelfde voor contactpunten en de buitenkant van de wc."],
+    dettoldoekjes: ["mixalles", "Doek plus spray; wegwerpdoekjes heb je niet nodig."],
+    cif: ["mixalles", "Doek plus spray; wegwerpdoekjes heb je niet nodig."],
+    dasty: ["soda", "Heet sop met 1 eetlepel soda, handschoenen aan. Even laten inwerken en afnemen."],
+    dubro: ["mixazijn", "Spuiten, 10 min laten werken, afnemen en naspoelen."],
+    antikal: ["mixazijn", "Na het douchen is de trekker genoeg. De azijnspray gebruik je bij de weekbeurt."],
+    natuurazijn: ["azijn", "Natuurazijn is voor in de keuken; om schoon te maken gebruik je schoonmaakazijn."]
+  };
+  Object.keys(stock).forEach(id => { if (!isBasis(id) && stock[id] === "bijna") delete stock[id]; });
+  const resolve = id => (stock[id] === "op" && alt[id]) ? { p: shelfById[alt[id][0]], from: shelfById[id], hint: alt[id][1] } : { p: shelfById[id] };
+  const replacedBy = base => Object.keys(alt).filter(k => alt[k][0] === base || mixBase[alt[k][0]] === base);
+  const lowItems = () => shelf.filter(p => isBasis(p[0]) && (stock[p[0]] === "bijna" || stock[p[0]] === "op"));
 
   /* ---------- Lijsten ---------- */
   const freq = {
@@ -456,7 +502,7 @@ details.acc[open] .chev { transform: rotate(180deg); }
       ["bed", "Bed opmaken", "Dekbed eerst even laten luchten.", 2],
       ["afwas", "Afwas doen", "Na het eten, of één keer per dag.", 10],
       ["aanrecht", "Aanrecht en inductieplaat afnemen", "Plaat pas als hij koud is.", 3],
-      ["douche", "Douche na gebruik", "Antikal, gordijn uitgespreid laten drogen.", 1],
+      ["douche", "Douche na gebruik", "Tegels aftrekken, gordijn uitgespreid laten drogen.", 1],
       ["ventileren", "Raam open", "Minstens 15 minuten.", 0]
     ]},
     week: { label: "Deze week", items: [
@@ -503,7 +549,7 @@ details.acc[open] .chev { transform: rotate(180deg); }
         { t: "Afwas doen", d: "Heet sop, glazen eerst en pannen als laatste. Laten uitdruipen in het rek.", p: ["dreft"], tip: "Wil je de afwas stap voor stap? Start dan Afwas op het startscherm.", mark: ["dag", "afwas"] },
         { t: "Aanrecht afnemen", d: "Kruimels eerst weg, dan afnemen en droog nawrijven.", p: ["keuken"], c: "groen" },
         { t: "Inductieplaat afnemen", d: "Alleen als hij koud is. Spuiten, afvegen en droog nawrijven, dan krijg je geen strepen.", p: ["dreftspray"], c: "glas", mark: ["dag", "aanrecht"] },
-        { t: "Douche na gebruik", d: "Antikal op tegels en kraan, niet naspoelen. Trek het gordijn dicht zodat het uitgespreid droogt.", p: ["antikal"], tip: "Nog niet gedoucht? Doe deze stap straks na het douchen.", mark: ["dag", "douche"] },
+        { t: "Douche na gebruik", d: "Trek tegels en vloer af met de trekker. Heb je antikalkspray, spuit die op tegels en kraan. Trek het gordijn dicht zodat het uitgespreid droogt.", p: ["antikal"], tip: "Nog niet gedoucht? Doe deze stap straks na het douchen.", mark: ["dag", "douche"] },
         { t: "Raam open", d: "Minstens 15 minuten. Zeker na koken en douchen, tegen vocht en schimmel.", mark: ["dag", "ventileren"] }
       ]},
     afwas: { name: "Afwas", icon: I.dish, min: 15, marks: [["dag", "afwas"]],
@@ -526,7 +572,7 @@ details.acc[open] .chev { transform: rotate(180deg); }
       steps: [
         { t: "Raam open, spullen weg", d: "Handdoeken en badmat eruit, spullen van de wastafelrand en uit de douchehoek." },
         { t: "WC doortrekken met de deksel dicht", d: "Zo spat er niets op wat je zo gaat schoonmaken." },
-        { t: "Inspuiten en laten werken", d: "Dubro op douchetegels, douchevloer, wastafel en kraan. WC-gel onder de rand. Start de timer en ga door met de spiegel.", p: ["dubro", "superfinn"], w: 10 },
+        { t: "Inspuiten en laten werken", d: "Badkamerreiniger op douchetegels, douchevloer, wastafel en kraan. WC-gel onder de rand. Start de timer en ga door met de spiegel.", p: ["dubro", "superfinn"], w: 10 },
         { t: "Spiegel", d: "Glasdoek licht nat, afnemen, direct droog nawrijven.", c: "glas" },
         { t: "Wastafel en kraan", d: "Afnemen, naspoelen en de kraan droog oppoetsen.", c: "geel" },
         { t: "Douche", d: "Gordijn opzij. Tegels van boven naar beneden afnemen, afspoelen en aftrekken. Haarzeef leegmaken.", c: "geel" },
@@ -537,10 +583,10 @@ details.acc[open] .chev { transform: rotate(180deg); }
       ]},
     keuken: { name: "Keuken", icon: I.pan, min: 20, marks: [["week", "keuken"]],
       need: ["Groene doek", "Glasdoek", "Spons met schuurkant", "Handschoenen", "Glasschraper"],
-      intro: "Gebruik nooit Dasty of schuurmiddel op je inductieplaat.",
+      intro: "Gebruik nooit ontvetter, soda of schuurmiddel op je inductieplaat.",
       steps: [
         { t: "Aanrecht leeg", d: "Afwas weg, alles wat er niet hoort van het aanrecht af." },
-        { t: "Ontvetter laten inwerken", d: "Dasty op de spatwand en de afzuigkap. Niet op de inductieplaat. Handschoenen aan.", p: ["dasty"], w: 5 },
+        { t: "Ontvetter laten inwerken", d: "Ontvetter op de spatwand en de afzuigkap. Niet op de inductieplaat. Handschoenen aan.", p: ["dasty"], w: 5 },
         { t: "Magnetron", d: "Kom water met een scheut azijn 3 minuten verwarmen, 2 minuten dicht laten en uitvegen.", p: ["azijn"], c: "groen" },
         { t: "Fronten en grepen", d: "Bovenkastjes eerst. Rond de grepen zit het meeste vet.", p: ["keuken"], c: "groen" },
         { t: "Spatwand en afzuigkap afnemen", d: "Het vet is nu losgeweekt. Afnemen en naspoelen met schoon water.", c: "groen" },
@@ -580,8 +626,8 @@ details.acc[open] .chev { transform: rotate(180deg); }
     : sessions[k].marks.every(([f, id]) => isDone(f, id));
 
   /* ---------- Hulp ---------- */
-  function checkRow(group, id, title, sub, extra, checked, action) {
-    const domId = "c-" + group + "-" + id;
+  function checkRow(group, id, title, sub, extra, checked, action, pre) {
+    const domId = (pre || "c") + "-" + group + "-" + id;
     return `<li><label class="check" for="${domId}">
       <input type="checkbox" id="${domId}" data-g="${group}" data-id="${id}" ${checked ? "checked" : ""}>
       <span class="box">${I.tick}</span>
@@ -657,14 +703,20 @@ details.acc[open] .chev { transform: rotate(180deg); }
         <span class="meta">± ${sessions.week.min} min · ${sessions.week.steps.length} stappen · alles in de goede volgorde</span></button>`;
 
     const low = lowItems();
-    $("#lowAlert").innerHTML = low.length ? `<div class="alert"><p><b>${low.length === 1 ? "Bijna op" : low.length + " producten bijna op"}:</b> ${esc(low.map(p => p[1]).join(", "))}</p><button class="link" type="button" id="toShop">Bekijk</button></div>` : "";
+    $("#lowAlert").innerHTML = low.length ? `<div class="alert"><p><b>Aanvullen:</b> ${esc(low.map(p => p[1]).join(", "))}</p><button class="link" type="button" id="toShop">Bekijk</button></div>` : "";
     if (low.length) $("#toShop").onclick = () => { kastTab = "boodschappen"; go("kast"); };
 
     const open = weekItems.filter(i => !isDone("week", i[0]) && !runFor.week[i[0]]);
     $("#openWeek").innerHTML = open.length
-      ? open.map(i => `<li><span>${esc(i[1])}</span><span class="mono">${i[3]} min</span></li>`).join("")
-      : `<li><span>Niets meer. Mooi zo.</span></li>`;
+      ? open.map(i => checkRow("week", i[0], i[1], i[2], i[3] + " min", false, "", "s")).join("")
+      : `<li style="padding:14px 16px">Niets meer deze week. Mooi zo.</li>`;
   }
+  $("#openWeek").addEventListener("change", e => {
+    const t = e.target; if (t.dataset.g !== "week") return;
+    setDone("week", t.dataset.id, t.checked);
+    toast("Afgevinkt: " + itemLabel("week", t.dataset.id));
+    renderStart();
+  });
   $("#todayBtn").addEventListener("click", () => {
     const anyDone = freq.dag.items.some(i => isDone("dag", i[0]));
     const firstOpen = sessions.dag.steps.findIndex(st => st.mark && !isDone(st.mark[0], st.mark[1]));
@@ -698,13 +750,11 @@ details.acc[open] .chev { transform: rotate(180deg); }
   /* ---------- Kast ---------- */
   let kastTab = "producten";
   const kindLabel = { zuur: "zuur · kalk", basisch: "basisch · vet", neutraal: "neutraal", check: "check etiket" };
-  const groups = [["keuken", "Keuken"], ["bad", "Badkamer"], ["overal", "Overal"]];
   const missing = [
-    ["b-zout", "Zuiveringszout", "Oven, aangebrande pan, koelkastgeur."],
-    ["b-glasdoek", "Microvezel glasdoek", "Spiegel en kraan streeploos, alleen met water."],
-    ["b-spray", "Lege sprayflacon", "Of spoel een lege uit. Voor azijn en water 1:1."],
-    ["b-kookplaat", "Kookplaatreiniger (optioneel)", "Voor kalkvlekken op je inductieplaat."],
-    ["b-schimmel", "Schimmelspray met chloor (alleen als nodig)", "Als de donkere puntjes bij je badkamerraam schimmel zijn."]
+    ["b-glasdoek", "Microvezel glasdoek", "Spiegel, glas en kraan streeploos, alleen met water. Vervangt glasreiniger."],
+    ["b-spray", "Tweede sprayfles", "Voor je azijnspray. Of hergebruik een lege AH-spray zodra die op is."],
+    ["b-zout", "Zuiveringszout (handig, niet nodig)", "Voor de oven, een aangebrande pan of een ruikende koelkast."],
+    ["b-schimmel", "Schimmelspray met chloor (alleen als nodig)", "Als de donkere puntjes bij je badkamerraam schimmel zijn. Nooit samen met azijn."]
   ];
   const kit = {
     "Doeken en borstels": [
@@ -720,33 +770,61 @@ details.acc[open] .chev { transform: rotate(180deg); }
     "Vloer en badkamer": [
       ["stofzuiger", "Stofzuiger met kiersmondstuk", ""], ["mop", "Vlakmop met microvezelhoes", ""],
       ["emmer", "Emmer", ""], ["stoffer", "Stoffer en blik", ""], ["trekker", "Trekker", "Voor douchetegels en vloer"],
-      ["ringen", "Reserve gordijnringen", "Kunststof"], ["schraper", "Glasschraper", "Voor je inductieplaat"]
+      ["sprayflessen", "Twee sprayflessen", "Voor je allesreinigerspray en azijnspray"], ["ringen", "Reserve gordijnringen", "Kunststof"], ["schraper", "Glasschraper", "Voor je inductieplaat"]
     ]
   };
   let have = store.get("ss-have", {});
   let bought = store.get("ss-bought", {});
   function prodAcc(p, open) {
-    const st = stock[p[0]] || "vol";
-    return `<details class="acc" data-id="${p[0]}"${open ? " open" : ""}>
-      <summary><span class="nm"><b>${esc(p[1])}</b><span>${esc(p[4])}</span></span>
-        ${st !== "vol" ? `<span class="pill ${st}">${st === "op" ? "Op" : "Bijna op"}</span>` : `<span class="ph ${p[3]}">${kindLabel[p[3]]}</span>`}${I.chev}</summary>
+    const id = p[0], st = stock[id] || "vol", basis = isBasis(id), mix = isMix(id), a = alt[id];
+    const opts = basis ? [["vol", "Op voorraad"], ["bijna", "Bijna op"], ["op", "Op"]] : [["vol", "Nog aanwezig"], ["op", "Op"]];
+    const badge = st === "op" ? `<span class="pill op">${basis ? "Op" : "Op · niet kopen"}</span>`
+      : st === "bijna" ? `<span class="pill bijna">Bijna op</span>` : `<span class="ph ${p[3]}">${kindLabel[p[3]]}</span>`;
+    const after = basis ? `<div><dt>Opnieuw kopen</dt><dd>${esc(basisInfo[id][2])}</dd></div>`
+      : a ? `<div><dt>Als het op is</dt><dd>Niet opnieuw kopen. Gebruik <b>${esc(shelfById[a[0]][1])}</b>. ${esc(a[1])}</dd></div>` : "";
+    return `<details class="acc${!basis && st === "op" ? " used-up" : ""}" data-id="${id}"${open ? " open" : ""}>
+      <summary><span class="nm"><b>${esc(p[1])}</b><span>${esc(p[4])}</span></span>${badge}${I.chev}</summary>
       <div class="acc-body">
         ${p[8] ? `<p style="color:var(--warn);font-weight:600">${esc(p[8])}</p>` : ""}
         <div class="dose">${esc(p[6])}</div>
-        <dl><div><dt>Niet op / niet met</dt><dd>${esc(p[5])}</dd></div><div><dt>Als het op is</dt><dd>${esc(p[7])}</dd></div></dl>
-        <div class="stock" role="group" aria-label="Voorraad">
-          ${[["vol", "Op voorraad"], ["bijna", "Bijna op"], ["op", "Op"]].map(([v, l]) => `<button type="button" data-id="${p[0]}" data-v="${v}" aria-pressed="${st === v}">${l}</button>`).join("")}
-        </div>
+        <dl><div><dt>Niet op / niet met</dt><dd>${esc(p[5])}</dd></div>${after}</dl>
+        ${mix ? "" : `<div class="stock" role="group" aria-label="Voorraad">
+          ${opts.map(([v, l]) => `<button type="button" data-id="${id}" data-v="${v}" aria-pressed="${st === v}">${l}</button>`).join("")}
+        </div>`}
       </div></details>`;
+  }
+  const head = (h, sub) => `<div class="group-head"><h2>${h}</h2>${sub ? `<p>${sub}</p>` : ""}</div>`;
+  function renderBasisset() {
+    const name = id => shelfById[id][1];
+    return `<div class="intro-card"><h2>Als je niets had</h2><p>Met deze zes middelen maak je je hele studio schoon. Alles wat je daarnaast hebt, is een handigere of luxere versie ervan: gebruik het op, maar koop het niet opnieuw.</p></div>
+      ${head("De zes basismiddelen", "Vul deze aan als ze op raken.")}
+      <div class="bcards">${basisIds.map(id => {
+        const b = basisInfo[id], rep = replacedBy(id);
+        return `<div class="bcard"><div class="top-row"><h3>${b[0]}</h3><span class="ph ${shelfById[id][3]}">${kindLabel[shelfById[id][3]]}</span></div>
+          <p>${b[1]}</p><span class="kv">Bij jou: <b>${esc(name(id))}</b></span>
+          ${rep.length ? `<span class="kv muted">Vervangt straks: ${esc(rep.map(name).join(", "))}</span>` : ""}</div>`;
+      }).join("")}</div>
+      ${head("Zelf mengen", "Twee sprayflessen, en je hebt geen losse sprays meer nodig. Schrijf erop wat erin zit.")}
+      <div class="bcards">${["mixalles", "mixazijn"].map(id => { const m = shelfById[id]; return `<div class="bcard mix"><h3>${m[1]}</h3><p>${esc(m[6])}</p><span class="kv">Voor: ${esc(m[4])}</span></div>`; }).join("")}</div>
+      ${head("Gereedschap", "Dit gaat lang mee. Je vindt het afvinkbaar onder Spullen.")}
+      <ul class="simple"><li>Microvezeldoeken in 4 kleuren <span>(blauw, groen, geel, rood)</span> en een glasdoek <span>(vervangt glasreiniger)</span></li><li>Spons met schuurkant, afwasborstel, wc-borstel</li><li>Trekker, emmer en vlakmop</li><li>Twee sprayflessen en huishoudhandschoenen</li></ul>
+      ${head("Handig, maar niet nodig", "")}
+      <ul class="simple"><li>Losse sprays voor keuken, badkamer of antikalk <span>(je mengsels doen hetzelfde)</span></li><li>Ontvetter <span>(soda doet hetzelfde)</span></li><li>Reinigingsdoekjes <span>(doek met spray)</span></li><li>Zuiveringszout <span>(fijn voor de oven en een aangebrande pan)</span></li><li>Schimmelspray met chloor <span>(alleen als je echt schimmel hebt)</span></li></ul>`;
   }
   function renderKast(openId) {
     const low = lowItems();
     const notBought = missing.filter(m => !bought[m[0]]).length;
-    tabs($("#kastTabs"), [["producten", "Producten"], ["spullen", "Spullen"], ["boodschappen", "Boodschappen", low.length + notBought]], kastTab, k => { kastTab = k; renderKast(); });
+    tabs($("#kastTabs"), [["producten", "Producten"], ["basis", "Basisset"], ["spullen", "Spullen"], ["boodschappen", "Boodschappen", low.length + notBought]], kastTab, k => { kastTab = k; renderKast(); });
     const body = $("#kastBody");
     if (kastTab === "producten") {
-      body.innerHTML = `<div class="safety"><b>Nooit mengen: chloor met azijn of ander zuur.</b><span>Dubro, Antikal en azijn zijn zuur. Kijk of je wc-gel chloor bevat.</span></div>` +
-        groups.map(([g, label]) => `<h2 class="group-title">${label}</h2><div class="acc-list">${shelf.filter(p => p[9] === g).map(p => prodAcc(p, p[0] === openId)).join("")}</div>`).join("");
+      const rest = shelf.filter(p => !isBasis(p[0]) && !isMix(p[0])).sort((a, b) => (stock[a[0]] === "op") - (stock[b[0]] === "op"));
+      const list = arr => `<div class="acc-list">${arr.map(p => prodAcc(p, p[0] === openId)).join("")}</div>`;
+      body.innerHTML = `<div class="safety"><b>Nooit mengen: chloor met azijn of ander zuur.</b><span>Azijn, Dubro en Antikal zijn zuur. Kijk of je wc-gel chloor bevat.</span></div>` +
+        head("Basis: altijd in huis", "Deze zes vul je aan. Zet ze op Bijna op, dan komen ze op je boodschappenlijst.") + list(basisIds.map(id => shelfById[id])) +
+        head("Zelf mengen", "Van je basis gemaakt, in een lege sprayfles.") + list(["mixalles", "mixazijn"].map(id => shelfById[id])) +
+        head("Opmaken, niet opnieuw kopen", "Handig zolang je het hebt. Is het op, dan neemt een basisproduct het over, ook in de stappen.") + list(rest);
+    } else if (kastTab === "basis") {
+      body.innerHTML = renderBasisset();
     } else if (kastTab === "spullen") {
       body.innerHTML = `<h2 class="group-title">Doeken: één kleur per zone</h2><div class="cloths">${Object.values(cloth).map(c => `<div class="cloth"><span class="sw" style="background:${c[0]}"></span><div><b>${c[1]}</b><span>${c[2]}</span></div></div>`).join("")}</div>` +
         Object.entries(kit).map(([g, items]) => `<h2 class="group-title">${g} <span class="mono muted">${items.filter(i => have[i[0]]).length}/${items.length}</span></h2><ul class="checks">${items.map(i => checkRow("kit", i[0], i[1], i[2], "", !!have[i[0]])).join("")}</ul>`).join("") +
@@ -762,7 +840,9 @@ details.acc[open] .chev { transform: rotate(180deg); }
   function setStock(id, v) {
     if (v === "vol") delete stock[id]; else stock[id] = v;
     store.set("ss-stock", stock); updateBadge();
-    if (v !== "vol") toast("Op je boodschappenlijst gezet");
+    if (v === "vol") return;
+    if (isBasis(id)) toast("Op je boodschappenlijst gezet");
+    else if (alt[id]) toast("Niet opnieuw kopen. Je gebruikt nu: " + shelfById[alt[id][0]][1]);
   }
   $("#kastBody").addEventListener("click", e => {
     const b = e.target.closest(".stock button");
@@ -783,28 +863,28 @@ details.acc[open] .chev { transform: rotate(180deg); }
   }
 
   /* ---------- Zoeken ---------- */
-  const pick = [
-    ["Afwas", "Dreft Quickwash"], ["Aangekoekte pan", "Dreft 3in1 spray"], ["Inductieplaat", "Dreft 3in1 spray, droog nawrijven"],
-    ["Aanrecht, fronten", "AH Keukenreiniger"], ["Afzuigkap, vet achter de kookplaat", "Dasty"], ["Afzuigkapfilter, afvoer", "Drie Hoek soda"],
-    ["Gootsteen, wastafel", "AH Schuurmiddel"], ["Tafel, kastjes, vensterbank", "AH Allesreiniger spray"], ["Dweilen", "Dettol blauw"],
-    ["Deurklink, buitenkant wc", "Dettol geel of Dettol doekjes"], ["Na het douchen", "Antikal"], ["Badkamer wekelijks", "Dubro"],
-    ["Binnenkant wc", "Super Finn"], ["Kalk, waterkoker", "AH Schoonmaakazijn"], ["Snel tussendoor", "Cif doekjes"]
-  ];
+  const pickList = () => [
+    ["Afwas", "dreft"], ["Aangekoekte pan", "dreftspray"], ["Inductieplaat", "dreftspray"],
+    ["Aanrecht, fronten", "keuken"], ["Afzuigkap, vet achter de kookplaat", "dasty"], ["Afzuigkapfilter, afvoer", "soda"],
+    ["Gootsteen, wastafel", "schuur"], ["Tafel, kastjes, vensterbank", "ahalles"], ["Dweilen", "dettolblauw"],
+    ["Deurklink, buitenkant wc", "dettolgeel"], ["Na het douchen", "antikal"], ["Badkamer wekelijks", "dubro"],
+    ["Binnenkant wc", "superfinn"], ["Kalk, waterkoker", "azijn"], ["Snel tussendoor", "cif"]
+  ].map(([task, id]) => { const r = resolve(id); return [task, r.p[1], r.from ? r.from[1] + " is op" : ""]; });
   const fixes = [
     ["Kalk op kraan of tegels", "kalk kraan douche tegels wit", ["Schoonmaakazijn", "Gele doek"], ["Doek of keukenpapier drenken in azijn.", "Om de kraan wikkelen of tegen de tegels plakken, 15–30 min.", "Afnemen en naspoelen.", "Droogwrijven, anders komt de kalk terug."]],
     ["Waterkoker ontkalken", "kalk waterkoker", ["Schoonmaakazijn"], ["Halfvol met water en azijn, half om half.", "Aan de kook brengen, 30 min laten staan.", "Leeggieten, twee keer schoon water koken en weggooien."]],
-    ["Zwarte schimmel in kitrand", "schimmel kit voeg zwart douche raam", ["Schimmelspray met chloor", "Handschoenen"], ["Raam open. Heb je net azijn of Dubro gebruikt? Eerst goed naspoelen.", "Inspuiten, 15–30 min laten werken.", "Afspoelen en droogmaken.", "Gaat het niet weg? Dan zit het in de kit en moet de kit vervangen worden."]],
+    ["Zwarte schimmel in kitrand", "schimmel kit voeg zwart douche raam", ["Schimmelspray met chloor", "Handschoenen"], ["Raam open. Heb je net azijn of badkamerreiniger gebruikt? Eerst goed naspoelen.", "Inspuiten, 15–30 min laten werken.", "Afspoelen en droogmaken.", "Gaat het niet weg? Dan zit het in de kit en moet de kit vervangen worden."]],
     ["Roze of zwarte aanslag op douchegordijn", "douchegordijn gordijn schimmel roze", ["Wasmachine of emmer", "Schoonmaakazijn"], ["Gordijn van de ringen halen.", "Wasmachine 30–40 °C met twee handdoeken en een scheut azijn.", "Zonder wasmachine: een uur weken in warm water met azijn (1 op 3), zoom borstelen.", "Nat terughangen en uitgespreid laten drogen."]],
-    ["Aangebrande pan", "pan aangebrand aangekoekt", ["Dreft 3in1 spray", "Zuiveringszout"], ["Eerst Dreft spray erop, 5 min laten werken.", "Helpt dat niet: bodem water met 2 el zuiveringszout opkoken, 10 min laten staan.", "Losschrapen met hout. Antiaanbak niet schuren."]],
-    ["Aangebrand op de inductieplaat", "kookplaat inductie aangebrand glas", ["Glasschraper", "Dreft 3in1 spray"], ["Plaat koud laten worden.", "Schraper onder een lage hoek, rustig wegschuiven.", "Spuiten, afvegen, droog nawrijven. Geen schuurmiddel."]],
+    ["Aangebrande pan", "pan aangebrand aangekoekt", ["Afwasmiddel", "Soda of zuiveringszout"], ["Bodem bedekken met heet water en een druppel afwasmiddel (of Dreft spray zolang je die hebt), 15 min laten weken.", "Helpt dat niet: water met 1 el soda of 2 el zuiveringszout opkoken, 10 min laten staan. Niet bij aluminium pannen.", "Losschrapen met hout. Antiaanbak niet schuren."]],
+    ["Aangebrand op de inductieplaat", "kookplaat inductie aangebrand glas", ["Glasschraper", "Afwasmiddel"], ["Plaat koud laten worden.", "Schraper onder een lage hoek, rustig wegschuiven.", "Vochtige doek met een druppel afwasmiddel, droog nawrijven met de glasdoek. Geen schuurmiddel, soda of ontvetter."]],
     ["Vette afzuigkapfilter", "afzuigkap filter vet", ["Drie Hoek soda", "Afwasborstel"], ["Gootsteen vullen met kokend water en 1–2 el soda.", "Filter 20 min laten weken.", "Borstelen, naspoelen, laten drogen."]],
     ["Stinkende of trage afvoer", "afvoer stank verstopt gootsteen", ["Drie Hoek soda", "Kokend water"], ["Zeefje en haren eruit.", "1 el soda in de afvoer, ketel kokend water erachteraan.", "Helpt het niet? Sifon losdraaien (emmer eronder) en schoonmaken."]],
     ["Magnetron aangekoekt", "magnetron vies spetters", ["Schoonmaakazijn"], ["Kom water met een scheut azijn erin.", "3–5 min op vol vermogen.", "2 min dicht laten, dan uitvegen."]],
     ["Oven vet en aangebrand", "oven vet aangebrand", ["Zuiveringszout", "Schoonmaakazijn"], ["Pasta van zuiveringszout en water op de wanden.", "Een nacht laten intrekken.", "Uitvegen, resten wegspuiten met azijn, droog nawrijven."]],
     ["Strepen op spiegel of glas", "strepen spiegel raam glas", ["Glasdoek"], ["Glasdoek licht nat maken.", "Afnemen in één richting, direct droog nawrijven.", "Niet in fel zonlicht."]],
     ["Koelkast ruikt", "koelkast stank geur", ["Schoonmaakazijn", "Zuiveringszout"], ["Alles eruit, over datum weg.", "Afnemen met water en een scheut azijn, droogmaken.", "Open bakje zuiveringszout achterin."]],
-    ["Kalkrand in de wc", "wc toilet kalk rand", ["Super Finn of azijn", "WC-borstel"], ["Water zo ver mogelijk wegborstelen.", "Gel of azijn op de rand, een nacht laten werken. Nooit allebei.", "Borstelen en doortrekken."]],
-    ["Vetspatten op tegels of muur", "vet tegels muur spatwand", ["Dasty"], ["Inspuiten, 2–5 min laten werken.", "Afnemen met de groene doek.", "Naspoelen en droogmaken."]],
+    ["Kalkrand in de wc", "wc toilet kalk rand", ["WC-gel of azijn", "WC-borstel"], ["Water zo ver mogelijk wegborstelen.", "Gel of azijn op de rand, een nacht laten werken. Nooit allebei.", "Borstelen en doortrekken."]],
+    ["Vetspatten op tegels of muur", "vet tegels muur spatwand", ["Ontvetter of soda", "Handschoenen"], ["Ontvetter erop, of heet sop met 1 el soda. 2–5 min laten werken.", "Afnemen met de groene doek.", "Naspoelen en droogmaken."]],
     ["Vlek in bank of matras", "vlek bank matras textiel", ["Koud water", "Dreft"], ["Deppen, niet wrijven.", "Bloed altijd met koud water.", "Mild sopje deppen, goed laten drogen. Eerst testen op een onzichtbare plek."]],
     ["Vocht of schimmel bij het raam", "vocht condens raam schimmel muur", ["Ventileren", "Schimmelspray"], ["'s Ochtends condens van het raam afnemen.", "Plekjes behandelen met schimmelspray, raam open.", "Daarna elke dag ventileren. Komt het terug: meld het bij je verhuurder."]]
   ];
@@ -814,14 +894,14 @@ details.acc[open] .chev { transform: rotate(180deg); }
     const q = $("#q").value.trim().toLowerCase();
     document.querySelectorAll("#chips .chip").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.q === q)));
     const fx = fixes.filter(f => !q || (f[0] + " " + f[1] + " " + f[2].join(" ")).toLowerCase().includes(q));
-    const pk = pick.filter(p => !q || (p[0] + " " + p[1]).toLowerCase().includes(q));
+    const pk = pickList().filter(p => !q || (p[0] + " " + p[1]).toLowerCase().includes(q));
     const pr = q ? shelf.filter(p => (p[1] + " " + p[2] + " " + p[4]).toLowerCase().includes(q)) : [];
     let html = "";
     if (fx.length) html += `<div><h2 style="margin-bottom:10px">Problemen</h2><div class="acc-list">${fx.map(f => `<details class="acc"${q && fx.length <= 2 ? " open" : ""}>
       <summary><span class="nm"><b>${esc(f[0])}</b><span>${esc(f[2].join(" · "))}</span></span>${I.chev}</summary>
       <div class="acc-body"><ol>${f[3].map(s => `<li>${esc(s)}</li>`).join("")}</ol></div></details>`).join("")}</div></div>`;
     if (pr.length) html += `<div><h2 style="margin-bottom:10px">In je kast</h2><div class="acc-list">${pr.map(p => prodAcc(p, p[0] === openId)).join("")}</div></div>`;
-    if (pk.length) html += `<div><h2 style="margin-bottom:10px">Wat pak ik voor…</h2><div class="pick">${pk.map(p => `<div><span>${esc(p[0])}</span><b>${esc(p[1])}</b></div>`).join("")}</div></div>`;
+    if (pk.length) html += `<div><h2 style="margin-bottom:10px">Wat pak ik voor…</h2><div class="pick">${pk.map(p => `<div><span>${esc(p[0])}</span><b>${esc(p[1])}${p[2] ? ` <span class="mono muted">(${esc(p[2])})</span>` : ""}</b></div>`).join("")}</div></div>`;
     $("#results").innerHTML = html || `<p class="empty">Niets gevonden voor “${esc(q)}”. Probeer een kort woord, zoals kalk of vet.</p>`;
   }
   $("#q").addEventListener("input", () => renderZoeken());
@@ -857,8 +937,9 @@ details.acc[open] .chev { transform: rotate(180deg); }
     return `<div class="use-item${low ? " low" : ""}"><span class="ic">${icon}</span><div><b>${esc(title)}</b>${sub ? `<span>${esc(sub)}</span>` : ""}</div></div>`;
   }
   function productUse(id) {
-    const p = shelfById[id]; const st = stock[id];
-    return useItem(I.bottle, p[1], st === "op" ? "Op! Gebruik: " + p[7] : st === "bijna" ? "Bijna op, staat op je lijst" : p[2], !!st);
+    const r = resolve(id), p = r.p, st = stock[p[0]];
+    if (r.from) return useItem(I.bottle, p[1], r.from[1] + " is op. " + r.hint, false);
+    return useItem(I.bottle, p[1], st === "op" ? "Op! Tot je nieuwe hebt: " + p[7] : st === "bijna" ? "Bijna op, staat op je lijst" : p[2], !!st);
   }
   function renderRun() {
     const s = sessions[run.k], n = s.steps.length, i = run.i;
@@ -868,7 +949,8 @@ details.acc[open] .chev { transform: rotate(180deg); }
     renderTimerChip();
     const body = $("#runBody"), foot = $("#runFoot");
     if (i < 0) {
-      const prods = [...new Set(s.steps.flatMap(st => st.p || []))];
+      const seen = new Set();
+      const prods = s.steps.flatMap(st => st.p || []).filter(id => { const r = resolve(id).p[0]; if (seen.has(r)) return false; seen.add(r); return true; });
       body.innerHTML = `<span class="eyebrow">± ${s.min} minuten · ${n} stappen</span><h2>${esc(s.name)}</h2>
         ${s.intro ? `<p class="desc">${esc(s.intro)}</p>` : ""}
         <div class="need"><span class="eyebrow">Pak erbij</span>${prods.map(productUse).join("")}${s.need.map(x => {
