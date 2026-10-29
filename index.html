@@ -275,6 +275,24 @@ details.acc[open] .chev { transform: rotate(180deg); }
 .done-list { margin: 0; padding-left: 20px; color: var(--muted); }
 
 .toast { position: fixed; left: 50%; bottom: calc(var(--tabbar) + 20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 60; background: var(--ink); color: var(--tile); padding: 12px 18px; border-radius: 12px; font-weight: 600; max-width: calc(100% - 32px); box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+.toast { display: flex; align-items: center; gap: 14px; }
+.toast button { background: none; border: 0; color: var(--sponge); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 4px 0; white-space: nowrap; }
+.shop-list { list-style: none; margin: 0; padding: 0; background: var(--surface); border: 2px solid var(--grout); border-radius: var(--r); overflow: hidden; }
+.shop-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 12px 14px 12px 16px; }
+.shop-list li + li { border-top: 2px solid var(--grout); }
+.shop-list .what { flex: 1 1 220px; min-width: 0; }
+.shop-list .what b { display: block; font-weight: 600; }
+.shop-list .what span { font-size: .88rem; color: var(--muted); }
+.shop-list .acts { display: flex; gap: 6px; }
+.tagline { font-family: var(--f-mono); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; padding: 2px 6px; border-radius: 5px; margin-left: 6px; vertical-align: 2px; }
+.tagline.op { background: var(--warn); color: var(--surface); }
+.tagline.bijna { background: var(--sponge); color: var(--sponge-ink); }
+.shop-foot { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+details.handled { background: var(--surface); border: 2px solid var(--grout); border-radius: 14px; }
+details.handled summary { padding: 12px 16px; cursor: pointer; font-weight: 600; color: var(--muted); }
+details.handled ul { list-style: none; margin: 0; padding: 0 16px 12px; display: grid; gap: 8px; }
+details.handled li { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+details.handled li span { color: var(--muted); }
 .run:not([hidden]) ~ .toast { bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
 </style>
 </head>
@@ -638,11 +656,16 @@ details.acc[open] .chev { transform: rotate(180deg); }
     el.innerHTML = entries.map(([k, label, n]) =>
       `<button role="tab" type="button" data-k="${k}" aria-selected="${k === cur}">${esc(label)}${n ? `<span class="n">${n}</span>` : ""}</button>`).join("");
     el.onclick = e => { const b = e.target.closest("button"); if (b) onPick(b.dataset.k); };
+    const sel = el.querySelector('[aria-selected="true"]');
+    if (sel && el.scrollWidth > el.clientWidth) el.scrollLeft = Math.max(0, sel.offsetLeft - el.offsetLeft - (el.clientWidth - sel.offsetWidth) / 2);
   }
   let toastT;
-  function toast(msg) {
-    const t = $("#toast"); t.textContent = msg; t.hidden = false;
-    clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3200);
+  function toast(msg, action, onAction) {
+    const t = $("#toast");
+    t.innerHTML = `<span>${esc(msg)}</span>${action ? `<button type="button">${esc(action)}</button>` : ""}`;
+    t.hidden = false;
+    if (action) t.querySelector("button").onclick = () => { t.hidden = true; onAction(); };
+    clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, action ? 6000 : 3200);
   }
   $("#date").textContent = now.toLocaleDateString("nl-NL", { weekday: "long", day: "numeric", month: "long" });
 
@@ -813,7 +836,7 @@ details.acc[open] .chev { transform: rotate(180deg); }
   }
   function renderKast(openId) {
     const low = lowItems();
-    const notBought = missing.filter(m => !bought[m[0]]).length;
+    const notBought = missing.filter(m => !bought[m[0]]).length; // bought: 1 = gekocht, "skip" = niet nodig
     tabs($("#kastTabs"), [["producten", "Producten"], ["basis", "Basisset"], ["spullen", "Spullen"], ["boodschappen", "Boodschappen", low.length + notBought]], kastTab, k => { kastTab = k; renderKast(); });
     const body = $("#kastBody");
     if (kastTab === "producten") {
@@ -830,10 +853,18 @@ details.acc[open] .chev { transform: rotate(180deg); }
         Object.entries(kit).map(([g, items]) => `<h2 class="group-title">${g} <span class="mono muted">${items.filter(i => have[i[0]]).length}/${items.length}</span></h2><ul class="checks">${items.map(i => checkRow("kit", i[0], i[1], i[2], "", !!have[i[0]])).join("")}</ul>`).join("") +
         `<h2 class="group-title">Op tijd vervangen</h2><ul class="open-list"><li><span>Spons</span><span class="mono">elke week</span></li><li><span>Vaatdoek en theedoeken wassen</span><span class="mono">elke 2–3 dagen</span></li><li><span>Afwasborstel</span><span class="mono">elke maand</span></li></ul>`;
     } else {
-      body.innerHTML = `<h2 class="group-title">Bijvullen</h2>` +
-        (low.length ? `<ul class="open-list">${low.map(p => `<li><span><b>${esc(p[1])}</b><br><span class="muted" style="font-size:.88rem">${stock[p[0]] === "op" ? "Op. Tot je nieuwe hebt: " + esc(p[7]) : "Bijna op"}</span></span><button class="btn small ghost" type="button" data-restock="${p[0]}">Gekocht</button></li>`).join("")}</ul>`
-          : `<p class="empty">Alles op voorraad. Zet bij Producten iets op Bijna op of Op, dan komt het hier.</p>`) +
-        `<h2 class="group-title">Nog niet in huis</h2><ul class="checks">${missing.map(m => checkRow("buy", m[0], m[1], m[2], "", !!bought[m[0]])).join("")}</ul>`;
+      const todo = missing.filter(m => !bought[m[0]]);
+      const handled = missing.filter(m => bought[m[0]]);
+      const rows = low.map(p => `<li><div class="what"><b>${esc(basisInfo[p[0]][0])}<span class="tagline ${stock[p[0]]}">${stock[p[0]] === "op" ? "op" : "bijna op"}</span></b>
+            <span>Bij jou: ${esc(p[1])}. ${stock[p[0]] === "op" ? "Tot je nieuwe hebt: " + esc(p[7]) : esc(basisInfo[p[0]][2])}</span></div>
+            <div class="acts"><button class="btn small dark" type="button" data-restock="${p[0]}">Gekocht</button></div></li>`)
+        .concat(todo.map(m => `<li><div class="what"><b>${esc(m[1])}</b><span>${esc(m[2])}</span></div>
+            <div class="acts"><button class="btn small ghost" type="button" data-skip="${m[0]}">Niet nodig</button><button class="btn small dark" type="button" data-buy="${m[0]}">Gekocht</button></div></li>`));
+      body.innerHTML = head("Te kopen", rows.length ? "Tik op Gekocht als je het in huis hebt. Basisproducten komen hier vanzelf bij als je ze op Bijna op zet." : "") +
+        (rows.length ? `<ul class="shop-list">${rows.join("")}</ul>
+          <div class="shop-foot"><span class="mono muted">${rows.length} ${rows.length === 1 ? "item" : "items"}</span><button class="btn small ghost" type="button" id="shopAll">Alles gekocht · lijst legen</button></div>`
+          : `<p class="empty">Je lijst is leeg. Zet een basisproduct bij Producten op Bijna op of Op, dan komt het hier.</p>`) +
+        (handled.length ? `<details class="handled"><summary>Afgehandeld (${handled.length})</summary><ul>${handled.map(m => `<li><span>${esc(m[1])} · ${bought[m[0]] === "skip" ? "niet nodig" : "gekocht"}</span><button class="btn small ghost" type="button" data-unbuy="${m[0]}">Terugzetten</button></li>`).join("")}</ul></details>` : "");
     }
     updateBadge();
   }
@@ -847,13 +878,29 @@ details.acc[open] .chev { transform: rotate(180deg); }
   $("#kastBody").addEventListener("click", e => {
     const b = e.target.closest(".stock button");
     if (b) { setStock(b.dataset.id, b.dataset.v); renderKast(b.dataset.id); return; }
+    const snap = () => { const s0 = JSON.stringify(stock), b0 = JSON.stringify(bought);
+      return () => { stock = JSON.parse(s0); bought = JSON.parse(b0); store.set("ss-stock", stock); store.set("ss-bought", bought); renderKast(); }; };
     const r = e.target.closest("[data-restock]");
-    if (r) { delete stock[r.dataset.restock]; store.set("ss-stock", stock); renderKast(); toast("Weer op voorraad"); }
+    if (r) { const undo = snap(); delete stock[r.dataset.restock]; store.set("ss-stock", stock); renderKast(); toast("Weer op voorraad", "Ongedaan maken", undo); return; }
+    const by = e.target.closest("[data-buy],[data-skip]");
+    if (by) {
+      const undo = snap(), id = by.dataset.buy || by.dataset.skip;
+      bought[id] = by.dataset.buy ? 1 : "skip"; store.set("ss-bought", bought); renderKast();
+      toast(by.dataset.buy ? "Gekocht" : "Van je lijst gehaald", "Ongedaan maken", undo); return;
+    }
+    const un = e.target.closest("[data-unbuy]");
+    if (un) { delete bought[un.dataset.unbuy]; store.set("ss-bought", bought); renderKast(); toast("Weer op je lijst"); return; }
+    if (e.target.closest("#shopAll")) {
+      const undo = snap();
+      lowItems().forEach(p => { delete stock[p[0]]; });
+      missing.forEach(m => { if (!bought[m[0]]) bought[m[0]] = 1; });
+      store.set("ss-stock", stock); store.set("ss-bought", bought); renderKast();
+      toast("Lijst geleegd", "Ongedaan maken", undo);
+    }
   });
   $("#kastBody").addEventListener("change", e => {
     const t = e.target;
     if (t.dataset.g === "kit") { if (t.checked) have[t.dataset.id] = 1; else delete have[t.dataset.id]; store.set("ss-have", have); }
-    else if (t.dataset.g === "buy") { if (t.checked) bought[t.dataset.id] = 1; else delete bought[t.dataset.id]; store.set("ss-bought", bought); }
     else return;
     renderKast(); const el = document.getElementById(t.id); if (el) el.focus();
   });
